@@ -5,8 +5,13 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "gameplay.core",
-      component: () => import("@/views/gameplay/renderer.vue")
+      name: "main-menu",
+      component: () => import("@/views/main-menu.vue")
+    },
+    {
+      path: "/play",
+      name: "play",
+      component: () => import("@/views/play.vue")
     }
   ]
 })

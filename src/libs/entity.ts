@@ -1,5 +1,5 @@
 import { defaults, join } from "@/libs/index"
-import type { Material } from "@/libs/material"
+import { Material } from "@/libs/material"
 import { MaterialTypes } from "@/libs/material"
 
 export enum EntityTypes {
@@ -36,7 +36,12 @@ export class Entity {
     this.name = name
   }
 
-  getColor() {
+  static fromJSON(save: any): Entity {
+    save.material = Material.fromJSON(save.material)
+    return Object.setPrototypeOf(save, Entity.prototype)
+  }
+
+  getColor(): string {
     switch (this.type) {
       case EntityTypes.ROBOT:
         return "gold"

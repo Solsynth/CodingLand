@@ -1,5 +1,6 @@
 import { defaults, join } from "@/libs/index"
 import { Temperature } from "@/libs/temperature"
+import { MapTile } from "@/libs/map"
 
 export enum MaterialTypes {
   VACUUM = "vacuum",
@@ -44,6 +45,11 @@ export class Material {
   constructor(type: MaterialTypes, temperature: Temperature = new Temperature(0)) {
     this.type = type
     this.temperature = temperature
+  }
+
+  static fromJSON(save: any): Material {
+    save.temperature = Temperature.fromJSON(save.temperature)
+    return Object.setPrototypeOf(save, Material.prototype)
   }
 
   getColor(): string {

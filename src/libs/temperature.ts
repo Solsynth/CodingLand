@@ -6,6 +6,10 @@ export class Temperature {
     this.temperature = temperature
   }
 
+  static fromJSON(save: any): Temperature {
+    return Object.setPrototypeOf(save, Temperature.prototype)
+  }
+
   toNumber(unit: "kelvin" | "celsius" | "fahrenheit") {
     switch (unit) {
       case "kelvin":

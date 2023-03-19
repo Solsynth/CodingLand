@@ -1,45 +1,33 @@
 <template>
-  <div class="container">
+  <q-page style="display: flex; justify-content: center; align-items: center">
     <div>
-      <div id="options">
-        <div style="display: flex; justify-content: space-between">
-          <span>CodingLand</span>
-          <button @click="generateMap">Start Game</button>
-        </div>
-      </div>
-
       <div id="scene" />
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, watch } from "vue"
-import { useGameplayData } from "@/stores/gameplay"
-import { EarthMapGenerator } from "@/libs/map-generator"
+import { useGameInstance } from "@/stores/instance"
 
-const $game = useGameplayData()
+const $instance = useGameInstance()
 
 const tileSize = 20
 
 let sense: HTMLDivElement
 
-function generateMap() {
-  $game.map.randomGenerate(new EarthMapGenerator(), 20, 20)
-}
-
 function render() {
   // Clear old render result
-  while (sense.firstChild) {
+  while (sense?.firstChild) {
     sense.removeChild(sense.firstChild)
   }
 
   // Set height and width
-  sense.style.width = `${tileSize * $game.map.size[0]}px`
-  sense.style.height = `${tileSize * $game.map.size[1]}px`
+  sense.style.width = `${tileSize * $instance.map.size[0]}px`
+  sense.style.height = `${tileSize * $instance.map.size[1]}px`
   sense.style.fontSize = `${0}px`
 
-  $game.map.forEach((tile) => {
+  $instance.map.forEach((tile) => {
     const tileElement = document.createElement("div")
     tileElement.style.backgroundColor = tile.material.getColor()
     tileElement.style.height = `${tileSize}px`
@@ -60,24 +48,19 @@ function render() {
 }
 
 onMounted(() => {
-  // Setup canvas rendering
+  // Setup rendering
   sense = document.getElementById("scene") as HTMLDivElement
-})
 
-watch($game.map, () => {
+  // First time render
   render()
 })
+
+watch($instance.map, () => {
+  render()
+}, { deep: true })
 </script>
 
 <style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-}
-
 #scene {
   display: flex;
   flex-wrap: wrap;
