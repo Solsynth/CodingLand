@@ -1,18 +1,93 @@
 <template>
-  <q-page style="display: flex; justify-content: center; align-items: center">
-    <div>
-      <div id="scene" />
-    </div>
+  <q-page>
+    <q-splitter v-model="splitters[0]" style="height: calc(100vh - 50px); width: 100%">
+      <template v-slot:before>
+        <q-splitter v-model="splitters[1]" horizontal>
+          <template v-slot:before>
+            <q-bar>Game Scene</q-bar>
+            <div class="flex justify-center items-center" style="height: calc(100% - 32px)">
+              <div>
+                <div id="scene" />
+                <q-popup-proxy :target="details.element" :model-value="details.info != null">
+                  <div>
+                    <q-banner>
+                      <div class="text-bold">Material</div>
+                      <div>{{ details.info?.material.type }}</div>
+                      <div class="text-bold">Position</div>
+                      <div>{{ details.info?.position.x }}, {{ details.info?.position.y }}</div>
+                      <div class="text-bold">Temperature</div>
+                      <div>{{ details.info?.material.temperature.toString("kelvin") }}K</div>
+                      <div class="text-bold">Mass</div>
+                      <div>{{ details.info?.mass }}kg</div>
+
+                      <div class="q-mt-sm" v-if="details.info?.entities.length > 0">
+                        <div class="text-bold">Entities</div>
+                        <div v-for="(entity, i) in details.info?.entities" :key="i">
+                          <div class="text-bold">{{ entity.name }}</div>
+                          <div>
+                            {{ entity.type }}
+                            ({{ entity.health }}%)
+                            {{ focus.robot?.name === entity.name ? "√" : "" }}
+                          </div>
+                          <div v-if="i >= 1" class="q-mb-md" />
+                        </div>
+                      </div>
+                    </q-banner>
+                  </div>
+                </q-popup-proxy>
+              </div>
+            </div>
+          </template>
+          <template v-slot:after>
+            <q-bar>
+              <div>Console</div>
+              <q-space />
+              <q-btn dense flat icon="mdi-delete" @click="$instance.console.messages = []">
+                <q-tooltip>
+                  Clear Console
+                </q-tooltip>
+              </q-btn>
+            </q-bar>
+            <q-virtual-scroll style="height: calc(100% - 32px)" :items="$instance.console.messages" separator
+                              v-slot="{ item, index }">
+              <q-item :key="index" dense>
+                <q-item-section avatar>
+                  <q-icon v-if="item.level === 'debug'" name="mdi-bug" />
+                  <q-icon v-if="item.level === 'info'" name="mdi-information" />
+                  <q-icon v-if="item.level === 'warning'" name="mdi-alert" />
+                  <q-icon v-if="item.level === 'error'" name="mdi-alert-circle" />
+                  <q-icon v-if="item.level === 'fatal'" name="mdi-close-circle" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ item.message }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-virtual-scroll>
+          </template>
+        </q-splitter>
+      </template>
+      <template v-slot:after>
+        <q-bar>Editor</q-bar>
+      </template>
+    </q-splitter>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from "vue"
+import { nextTick, onMounted, reactive, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
+import { EntityTypes } from "@/libs/entity"
+import { v4 as uuidv4 } from "uuid"
 
 const $instance = useGameInstance()
 
-const tileSize = 20
+const splitters = reactive([50, 50, 50])
+
+const focus = reactive<any>({ element: "", layer: 0, position: null, robot: null })
+const details = reactive<any>({ element: "", info: null })
+const configuration = reactive({
+  tile: { size: 20 }
+})
 
 let sense: HTMLDivElement
 
@@ -23,26 +98,54 @@ function render() {
   }
 
   // Set height and width
-  sense.style.width = `${tileSize * $instance.map.size[0]}px`
-  sense.style.height = `${tileSize * $instance.map.size[1]}px`
+  sense.style.width = `${configuration.tile.size * $instance.map.size.x}px`
+  sense.style.height = `${configuration.tile.size * $instance.map.size.y}px`
   sense.style.fontSize = `${0}px`
 
   $instance.map.forEach((tile) => {
     const tileElement = document.createElement("div")
+    tileElement.id = `tiles-${uuidv4()}`
     tileElement.style.backgroundColor = tile.material.getColor()
-    tileElement.style.height = `${tileSize}px`
-    tileElement.style.width = `${tileSize}px`
+    tileElement.style.height = `${configuration.tile.size}px`
+    tileElement.style.width = `${configuration.tile.size}px`
     tileElement.className = "element-tiles"
     for (const entity of tile.entities) {
       const entityElement = document.createElement("div")
+      tileElement.id = `tiles-${uuidv4()}`
       entityElement.style.backgroundColor = entity.getColor()
-      entityElement.style.height = `${tileSize}px`
-      entityElement.style.width = `${tileSize}px`
+      entityElement.style.height = `${configuration.tile.size}px`
+      entityElement.style.width = `${configuration.tile.size}px`
       entityElement.style.borderRadius = "50%"
       entityElement.style.position = "absolute"
       entityElement.className = "entity-tiles"
       tileElement.append(entityElement)
     }
+    tileElement.addEventListener("mouseover", () => {
+      details.info = null
+      nextTick(() => {
+        details.element = `#${tileElement.id}`
+        details.info = tile
+      })
+    })
+    tileElement.addEventListener("click", () => {
+      focus.element = `#${tileElement.id}`
+      if (tile.entities.length > 0) {
+        if (focus.element !== `#${tileElement.id}`) {
+          focus.layer = 0
+        }
+        const robots = tile.entities.filter((v) => v.type == EntityTypes.ROBOT)
+        if (robots.length > 0) {
+          focus.position = tile.position
+          focus.robot = robots[focus.layer]
+          focus.layer = robots.length <= focus.layer + 1 ? focus.layer : focus.layer + 1
+          $instance.log("info", `You are controlling the robot ${focus.robot.name}`)
+        }
+      } else {
+        $instance.log("info", `You no longer control the robot ${focus.robot.name}`)
+        focus.robot = null
+        focus.position = null
+      }
+    })
     sense.append(tileElement)
   })
 }
@@ -53,6 +156,29 @@ onMounted(() => {
 
   // First time render
   render()
+
+  // Keyboard listener
+  document.addEventListener("keyup", (event) => {
+    // Keyboard control robot events
+    if (focus.robot != null) {
+      let status: boolean = false
+      switch (event.key.toLowerCase()) {
+        case "w":
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: -1, y: 0 })
+          break
+        case "a":
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: 0, y: -1 })
+          break
+        case "s":
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: 1, y: 0 })
+          break
+        case "d":
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: 0, y: 1 })
+          break
+      }
+      !status && $instance.log("debug", "Control robot movement failed.")
+    }
+  })
 })
 
 watch($instance.map, () => {

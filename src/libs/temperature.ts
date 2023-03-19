@@ -15,7 +15,7 @@ export class Temperature {
       case "kelvin":
         return this.temperature
       case "celsius":
-        return this.temperature + 273.15
+        return this.temperature - 273.15
       case "fahrenheit":
         return this.temperature * 9 / 5 - 459.67
     }

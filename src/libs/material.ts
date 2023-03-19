@@ -3,16 +3,16 @@ import { Temperature } from "@/libs/temperature"
 import { MapTile } from "@/libs/map"
 
 export enum MaterialTypes {
-  VACUUM = "vacuum",
-  DIRT = "dirt",
-  WOOD = "wood",
-  STONE = "stone",
-  COAL = "coal",
-  COPPER = "copper",
-  IRON = "iron",
-  ALUMINUM = "aluminum",
-  STEEL = "steel",
-  NEUTRONIUM = "neutronium"
+  VACUUM = "Vacuum",
+  DIRT = "Dirt",
+  WOOD = "Wood",
+  STONE = "Stone",
+  COAL = "Coal",
+  COPPER = "Copper",
+  IRON = "Iron",
+  ALUMINUM = "Aluminum",
+  STEEL = "Steel",
+  NEUTRONIUM = "Neutronium"
 }
 
 export namespace MaterialTypes {
@@ -50,6 +50,10 @@ export class Material {
   static fromJSON(save: any): Material {
     save.temperature = Temperature.fromJSON(save.temperature)
     return Object.setPrototypeOf(save, Material.prototype)
+  }
+
+  getType(): string {
+    return MaterialTypes.toString(this.type)
   }
 
   getColor(): string {

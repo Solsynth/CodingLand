@@ -5,7 +5,7 @@ import { Entity } from "@/libs/entity"
 export type Coordinate = { x: number, y: number }
 
 export class MapTile {
-  // Tile relative position
+  // Tile absolute position
   position: Coordinate
 
   // Tile material
@@ -25,7 +25,7 @@ export class MapTile {
 
   static fromJSON(save: any): MapTile {
     const entities: Entity[] = []
-    for(const entity of save.entities.values()) {
+    for (const entity of save.entities.values()) {
       entities.push(Entity.fromJSON(entity))
     }
     save.entities = entities
@@ -42,29 +42,33 @@ export class Map {
   robots: { [name: string]: Entity } = {}
 
   // Map size(width, height)
-  size: number[]
+  size: Coordinate
 
-  constructor(tiles: MapTile[][] = [], size: number[] = [0, 0]) {
+  constructor(tiles: MapTile[][] = [], size: Coordinate) {
     this.tiles = tiles
     this.size = size
   }
 
   static fromJSON(save: any): Map {
     const tiles: MapTile[][] = []
-    for(const rows of save.tiles) {
+    for (const rows of save.tiles) {
       const buffer: MapTile[] = []
-      for(const tile of rows) {
+      for (const tile of rows) {
         buffer.push(MapTile.fromJSON(tile))
       }
       tiles.push(buffer)
     }
     save.tiles = tiles
     const robots: Entity[] = []
-    for(const robot of save.robots.values()) {
+    for (const robot of save.robots.values()) {
       robots.push(Entity.fromJSON(robot))
     }
     save.robots = robots
     return Object.setPrototypeOf(save, Map.prototype)
+  }
+
+  inRange(position: Coordinate): boolean {
+    return this.size.x > position.x && 0 < position.x && this.size.y > position.y && 0 < position.y
   }
 
   forEach(callback: (tile: MapTile) => void) {
@@ -79,6 +83,6 @@ export class Map {
     generator.generate(width, height)
     generator.placeRobot(robots).forEach((v) => this.robots[v.name] = v)
     this.tiles = generator.tiles
-    this.size = [width, height]
+    this.size = { x: width, y: height }
   }
 }

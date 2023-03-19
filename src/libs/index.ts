@@ -1,5 +1,5 @@
 export const defaults = {
-  namespace: "codingland:core"
+  namespace: "CodingLand.Core"
 }
 
 export function join(namespace: string, ...append: string[]): string {
