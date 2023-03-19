@@ -26,6 +26,11 @@
                           <div class="text-bold">{{ entity.name }}</div>
                           <div>
                             {{ entity.type }}
+                            {{
+                              entity.facing === "north" ?
+                                "↑" : entity.facing === "south" ?
+                                  "↓" : entity.facing === "west" ? "←" : "→"
+                            }}
                             ({{ entity.health }}%)
                             {{ focus.robot?.name === entity.name ? "√" : "" }}
                           </div>
@@ -39,30 +44,60 @@
             </div>
           </template>
           <template v-slot:after>
-            <q-bar>
-              <div>Console</div>
-              <q-space />
-              <q-btn dense flat icon="mdi-delete" @click="$instance.console.messages = []">
-                <q-tooltip>
-                  Clear Console
-                </q-tooltip>
-              </q-btn>
-            </q-bar>
-            <q-virtual-scroll style="height: calc(100% - 32px)" :items="$instance.console.messages" separator
-                              v-slot="{ item, index }">
-              <q-item :key="index" dense>
-                <q-item-section avatar>
-                  <q-icon v-if="item.level === 'debug'" name="mdi-bug" />
-                  <q-icon v-if="item.level === 'info'" name="mdi-information" />
-                  <q-icon v-if="item.level === 'warning'" name="mdi-alert" />
-                  <q-icon v-if="item.level === 'error'" name="mdi-alert-circle" />
-                  <q-icon v-if="item.level === 'fatal'" name="mdi-close-circle" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ item.message }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-virtual-scroll>
+            <q-tab-panels style="height: calc(100% - 37px)" v-model="modes.slide1" animated>
+              <q-tab-panel class="q-pa-none" name="console">
+                <q-bar>
+                  <div>Console</div>
+                  <q-space />
+                  <q-btn dense flat icon="mdi-delete" @click="$instance.console.messages = []">
+                    <q-tooltip>
+                      Clear Console
+                    </q-tooltip>
+                  </q-btn>
+                </q-bar>
+                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="$instance.console.messages" separator
+                                  v-slot="{ item, index }">
+                  <q-item :key="index" dense>
+                    <q-item-section avatar>
+                      <q-icon v-if="item.level === 'debug'" name="mdi-bug" />
+                      <q-icon v-if="item.level === 'info'" name="mdi-information" />
+                      <q-icon v-if="item.level === 'warning'" name="mdi-alert" />
+                      <q-icon v-if="item.level === 'error'" name="mdi-alert-circle" />
+                      <q-icon v-if="item.level === 'fatal'" name="mdi-close-circle" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ item.message }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-virtual-scroll>
+              </q-tab-panel>
+
+              <q-tab-panel class="q-pa-none" name="inventory">
+                <q-bar>Inventory</q-bar>
+                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.entries($instance.map.inventory)"
+                                  separator v-slot="{ item, index }">
+                  <q-item :key="index" dense>
+                    <q-item-section>
+                      <q-item-label>{{ item[0] }}</q-item-label>
+                      <q-item-label caption>{{ item[1] }}kg</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-virtual-scroll>
+              </q-tab-panel>
+            </q-tab-panels>
+
+            <q-separator />
+
+            <q-tabs
+              v-model="modes.slide1"
+              dense
+              :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+              align="justify"
+              narrow-indicator
+            >
+              <q-tab name="console" label="Console" />
+              <q-tab name="inventory" label="Inventory" />
+            </q-tabs>
           </template>
         </q-splitter>
       </template>
@@ -82,9 +117,10 @@ import { v4 as uuidv4 } from "uuid"
 const $instance = useGameInstance()
 
 const splitters = reactive([50, 50, 50])
+const modes = reactive({ slide1: "console" })
 
-const focus = reactive<any>({ element: "", layer: 0, position: null, robot: null })
-const details = reactive<any>({ element: "", info: null })
+const focus = reactive<any>({ element: null, layer: 0, position: null, robot: null })
+const details = reactive<any>({ element: false, info: null })
 const configuration = reactive({
   tile: { size: 20 }
 })
@@ -121,11 +157,12 @@ function render() {
       tileElement.append(entityElement)
     }
     tileElement.addEventListener("mouseover", () => {
+      details.element = `#${tileElement.id}`
+      details.info = tile
+    })
+    tileElement.addEventListener("mouseout", () => {
+      details.element = false
       details.info = null
-      nextTick(() => {
-        details.element = `#${tileElement.id}`
-        details.info = tile
-      })
     })
     tileElement.addEventListener("click", () => {
       focus.element = `#${tileElement.id}`
@@ -164,19 +201,34 @@ onMounted(() => {
       let status: boolean = false
       switch (event.key.toLowerCase()) {
         case "w":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: -1, y: 0 })
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
+            x: -1,
+            y: 0
+          }, "north")
           break
         case "a":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: 0, y: -1 })
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
+            x: 0,
+            y: -1
+          }, "west")
           break
         case "s":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: 1, y: 0 })
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
+            x: 1,
+            y: 0
+          }, "south")
           break
         case "d":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, { x: 0, y: 1 })
+          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
+            x: 0,
+            y: 1
+          }, "east")
+          break
+        case " ":
+          [$instance.map, status] = focus.robot.dig($instance.map, focus.position)
           break
       }
-      !status && $instance.log("debug", "Control robot movement failed.")
+      !status && $instance.log("warning", "Control robot execute operation failed")
     }
   })
 })

@@ -4,6 +4,14 @@ import { Entity } from "@/libs/entity"
 
 export type Coordinate = { x: number, y: number }
 
+export type Direction = "north" | "south" | "west" | "east"
+export const DirectionRelativePosition = {
+  north: { x: -1, y: 0 },
+  south: { x: 1, y: 0 },
+  west: { x: 0, y: -1 },
+  east: { x: 0, y: 1 }
+}
+
 export class MapTile {
   // Tile absolute position
   position: Coordinate
@@ -25,7 +33,7 @@ export class MapTile {
 
   static fromJSON(save: any): MapTile {
     const entities: Entity[] = []
-    for (const entity of save.entities.values()) {
+    for (const entity of save.entities) {
       entities.push(Entity.fromJSON(entity))
     }
     save.entities = entities
@@ -44,6 +52,9 @@ export class Map {
   // Map size(width, height)
   size: Coordinate
 
+  // Player inventory
+  inventory: { [id: string]: number } = {}
+
   constructor(tiles: MapTile[][] = [], size: Coordinate) {
     this.tiles = tiles
     this.size = size
@@ -60,7 +71,7 @@ export class Map {
     }
     save.tiles = tiles
     const robots: Entity[] = []
-    for (const robot of save.robots.values()) {
+    for (const robot of Object.values(save.robots)) {
       robots.push(Entity.fromJSON(robot))
     }
     save.robots = robots

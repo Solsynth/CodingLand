@@ -1,7 +1,8 @@
 import { defaults, join } from "@/libs/index"
 import { Material, MaterialTypes } from "@/libs/material"
-import type { Coordinate } from "@/libs/map"
-import type { Map, MapTile } from "@/libs/map"
+import type { Coordinate, Direction, Map } from "@/libs/map"
+import { DirectionRelativePosition } from "@/libs/map"
+import { Temperature } from "@/libs/temperature"
 
 export enum EntityTypes {
   ROBOT = "Robot"
@@ -13,7 +14,9 @@ export namespace EntityTypes {
   }
 }
 
-export const STANDABLE_MATERIAL_TYPES = [MaterialTypes.VACUUM]
+export const StandableMaterialTypes = [MaterialTypes.VACUUM]
+
+export const UnbreakableMaterialTypes = [MaterialTypes.VACUUM, MaterialTypes.NEUTRONIUM]
 
 export class Entity {
   // Entity name
@@ -21,6 +24,9 @@ export class Entity {
 
   // Entity type
   type: EntityTypes
+
+  // Entity facing
+  facing: Direction = "north"
 
   // Entity mass(kilograms)
   mass: number
@@ -59,16 +65,22 @@ export class Entity {
     }
   }
 
-  move(map: Map, start: Coordinate, position: Coordinate): [Map, Coordinate, boolean] {
+  move(map: Map, start: Coordinate, position: Coordinate, facing: Direction): [Map, Coordinate, boolean] {
     let abs: Coordinate | null = null
+    map.tiles[start.x][start.y].entities.forEach((v) => {
+      if (v.name === this.name) {
+        v.facing = facing
+      }
+    })
+    
     for (const coordinate of this.reachableZone) {
       // Check position is reachable, in the map and safe
       if (coordinate.x == position.x && coordinate.y == position.y) {
         abs = { x: start.x + position.x, y: start.y + position.y }
         if (!map.inRange(abs)) {
-          return [map, start, false]
-        } else if (!STANDABLE_MATERIAL_TYPES.includes(map.tiles[abs.x][abs.y].material.type)) {
-          return [map, start, false]
+          return [map, start, true]
+        } else if (!StandableMaterialTypes.includes(map.tiles[abs.x][abs.y].material.type)) {
+          return [map, start, true]
         } else {
           break
         }
@@ -84,6 +96,39 @@ export class Entity {
       map.tiles[abs.x][abs.y].entities.push(this)
 
       return [map, abs, true]
+    }
+  }
+
+  dig(map: Map, start: Coordinate): [Map, boolean] {
+    let abs: Coordinate | null = null
+    const position: Coordinate = DirectionRelativePosition[this.facing]
+    for (const coordinate of this.reachableZone) {
+      // Check position is reachable, in the map and breakable
+      if (coordinate.x == position.x && coordinate.y == position.y) {
+        abs = { x: start.x + position.x, y: start.y + position.y }
+        if (!map.inRange(abs)) {
+          return [map, false]
+        } else if (UnbreakableMaterialTypes.includes(map.tiles[abs.x][abs.y].material.type)) {
+          return [map, false]
+        } else {
+          break
+        }
+      }
+    }
+
+    if (abs == null) {
+      return [map, false]
+    } else {
+      // Select the tile by position
+      const tile = map.tiles[abs.x][abs.y]
+      // Add material to inventory
+      map.inventory[tile.material.type] = (map.inventory[tile.material.type] ?? 0) + tile.mass
+      // Set tile as vacuum
+      map.tiles[abs.x][abs.y].mass = 0
+      map.tiles[abs.x][abs.y].material.type = MaterialTypes.VACUUM
+      map.tiles[abs.x][abs.y].material.temperature = new Temperature(0)
+
+      return [map, true]
     }
   }
 }
