@@ -24,6 +24,8 @@
                       <div>{{ details.info?.material.temperature.toString("celsius") }}C</div>
                       <div class="text-bold">Mass</div>
                       <div>{{ details.info?.material.mass }}kg</div>
+                      <div class="text-bold">Durability</div>
+                      <div>{{ details.info?.material.durability }}%</div>
 
                       <div class="q-mt-sm" v-if="details.info?.entities.length > 0">
                         <div class="text-bold">Entities</div>

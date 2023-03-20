@@ -62,9 +62,7 @@ export class GameInstance {
       tile.material.whenUpdate(this)
       for (const entity of tile.entities) {
         entity.whenUpdate(this)
-        console.log(entity.tasks)
         for (let i = 0; i < entity.tasks.length; i++) {
-          console.log(entity.tasks[i])
           if (entity.beforeExecuteTask(this, entity.tasks[i])) {
             entity.tasks[i].action(this)
           }

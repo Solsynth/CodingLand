@@ -5,6 +5,7 @@ import { Temperature } from "@/libs/temperature"
 import { DirtMaterial } from "@/libs/materials/dirt"
 import { RobotEntity } from "@/libs/entities/robot"
 import { VacuumMaterial } from "@/libs/materials/vacuum"
+import { SaveLoader } from "@/libs/loader"
 
 export interface IMapGenerator {
   // Generated map
@@ -28,7 +29,8 @@ export class EarthMapGenerator implements IMapGenerator {
     for (let x = 0; x < width; x++) {
       map[x] = []
       for (let y = 0; y < height; y++) {
-        const material = this.materials[Math.floor(Math.random() * this.materials.length)]
+        // Deep copy the material in materials list
+        const material = SaveLoader.fromJSON2Material(JSON.parse(JSON.stringify(this.materials[Math.floor(Math.random() * this.materials.length)])))
         const tile = new MapTile({ x, y }, material, Math.floor(Math.random() * 1000))
         map[x][y] = tile
         if (Object.getPrototypeOf(tile.material).constructor.attributes.standable) {

@@ -77,10 +77,10 @@ export class EntityDigTask extends Task {
       instance.messages.push({ level: "info", message: `Digging complete ${remain}%` })
 
       if (remain <= 0) {
+        this.destroyable = true
         instance.messages.push({ level: "info", message: "Digging completed." })
         instance.map.tiles[this.data.position.x][this.data.position.y].mass = 0
         instance.map.tiles[this.data.position.x][this.data.position.y].material = new VacuumMaterial(0, new Temperature(0))
-        this.destroyable = true
         this.callback != null && this.callback(this)
       }
     }
