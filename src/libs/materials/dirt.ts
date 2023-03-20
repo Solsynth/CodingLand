@@ -8,7 +8,8 @@ export class DirtMaterial extends Material {
   static attributes = {
     standable: false,
     unbreakable: false,
-    replaceable: false
+    replaceable: false,
+    hardness: 50
   }
 
   static style = {

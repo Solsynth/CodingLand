@@ -47,7 +47,7 @@ export class Map {
   }
 
   inRange(position: Coordinate): boolean {
-    return this.size.x > position.x && 0 < position.x && this.size.y > position.y && 0 < position.y
+    return this.size.x > position.x && position.x >= 0 && this.size.y > position.y && position.y >= 0
   }
 
   forEach(callback: (tile: MapTile) => void) {

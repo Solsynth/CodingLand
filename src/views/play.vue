@@ -141,14 +141,14 @@ function render() {
   $instance.instance.map.forEach((tile) => {
     const tileElement = document.createElement("div")
     tileElement.id = `tiles-${uuidv4()}`
-    tileElement.style.backgroundColor = Object.getPrototypeOf(tile.material).constructor.style.color
+    tileElement.style.backgroundColor = tile.material.prototype.constructor.style.color
     tileElement.style.height = `${configuration.tile.size}px`
     tileElement.style.width = `${configuration.tile.size}px`
     tileElement.className = "element-tiles"
     for (const entity of tile.entities) {
       const entityElement = document.createElement("div")
       tileElement.id = `tiles-${uuidv4()}`
-      entityElement.style.backgroundColor = Object.getPrototypeOf(entity).constructor.style.color
+      entityElement.style.backgroundColor = entity.prototype.constructor.style.color
       entityElement.style.height = `${configuration.tile.size}px`
       entityElement.style.width = `${configuration.tile.size}px`
       entityElement.style.borderRadius = "50%"
@@ -195,28 +195,26 @@ onMounted(() => {
   render()
 
   // Keyboard listener
-  document.addEventListener("keyup", (event) => {
+  document.addEventListener("keydown", (event) => {
     // Keyboard control robot events
     if (focus.robot != null) {
-      let status: boolean = false
       switch (event.key.toLowerCase()) {
         case "w":
-          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "north")
+          [focus.position] = focus.robot.move($instance.instance, focus.position, "north")
           break
         case "a":
-          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "west")
+          [focus.position] = focus.robot.move($instance.instance, focus.position, "west")
           break
         case "s":
-          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "south")
+          [focus.position] = focus.robot.move($instance.instance, focus.position, "south")
           break
         case "d":
-          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "east")
+          [focus.position] = focus.robot.move($instance.instance, focus.position, "east")
           break
         case " ":
-          status = focus.robot.dig($instance.instance, focus.position)
+          focus.robot.dig($instance.instance, focus.position)
           break
       }
-      !status && $instance.log("warning", "Control robot execute operation failed")
     }
   })
 })
@@ -224,6 +222,10 @@ onMounted(() => {
 watch($instance.instance, () => {
   render()
 }, { deep: true })
+
+onMounted(() => {
+  $instance.instance.start()
+})
 </script>
 
 <style scoped>

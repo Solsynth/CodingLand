@@ -8,7 +8,8 @@ export class NeutroniumMaterial extends Material {
   static attributes = {
     standable: false,
     unbreakable: true,
-    replaceable: false
+    replaceable: false,
+    hardness: 0,
   }
 
   static style = {

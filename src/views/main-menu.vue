@@ -21,7 +21,7 @@ const $instance = useGameInstance()
 const $router = useRouter()
 
 function start() {
-  $instance.instance.start(new EarthMapGenerator())
+  $instance.instance.newGame(new EarthMapGenerator())
   $router.push({ name: "play" })
 }
 </script>

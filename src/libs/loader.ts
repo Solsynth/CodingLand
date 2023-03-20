@@ -1,15 +1,26 @@
 import { Map, MapTile } from "@/libs/map"
-import { Entity } from "@/libs/entity"
-import { Material } from "@/libs/material"
+import type { Entity } from "@/libs/entity"
+import type { Material } from "@/libs/material"
 import { GameInstance } from "@/libs/instance"
-import { VacuumMaterial } from "@/libs/materials/vacuum"
-import { DirtMaterial } from "@/libs/materials/dirt"
-import { NeutroniumMaterial } from "@/libs/materials/neutronium"
 import { Temperature } from "@/libs/temperature"
-import { RobotEntity } from "@/libs/entities/robot"
-import { join, defaults } from "@/libs/index"
+import { entityModules } from "@/libs/entities"
+import { materialModules } from "@/libs/materials"
+import { taskModules } from "@/libs/tasks"
 
 export class SaveLoader {
+  static entityModuleTree = SaveLoader.modulesTreeBuilder("entities", ...entityModules)
+  static materialModuleTree = SaveLoader.modulesTreeBuilder("materials", ...materialModules)
+  static taskModuleTree = SaveLoader.modulesTreeBuilder("tasks", ...taskModules)
+  static modulesTreeBuilder(namespace: string, ...modules: any[]) {
+    const tree: { [id: string]: Material } = {}
+    for (const module of modules) {
+      const id = new module().id
+      const prototype = module.prototype
+      tree[id] = prototype
+    }
+    return tree
+  }
+
   static fromJSON2Instance(save: any): GameInstance {
     save.map = SaveLoader.fromJSON2Map(save.map)
     return Object.setPrototypeOf(save, GameInstance.prototype)
@@ -39,32 +50,34 @@ export class SaveLoader {
   }
 
   static fromJSON2Entity(save: any): Entity {
-    const index: { [id: string]: Entity } = {
-      [join(defaults.namespace, "entities", "robot")]: RobotEntity.prototype,
-      ["undefined"]: Entity.prototype
+    const tasks = []
+    for(const task of save.tasks) {
+      tasks.push(SaveLoader.fromJSON2Task(task))
     }
+    save.tasks = tasks
 
     if (save.id === "undefined") {
       console.error("[SaveLoader] Load entity failed. Unexpected id in save", save)
     }
 
     save.material = SaveLoader.fromJSON2Material(save.material)
-    return Object.setPrototypeOf(save, index[save.id])
+    return Object.setPrototypeOf(save, SaveLoader.entityModuleTree[save.id])
   }
 
   static fromJSON2Material(save: any): Material {
-    const index: { [id: string]: Material } = {
-      [join(defaults.namespace, "materials", "vacuum")]: VacuumMaterial.prototype,
-      [join(defaults.namespace, "materials", "dirt")]: DirtMaterial.prototype,
-      [join(defaults.namespace, "materials", "neutronium")]: NeutroniumMaterial.prototype,
-      ["undefined"]: Material.prototype
-    }
-
     if (save.id === "undefined") {
       console.error("[SaveLoader] Load material failed. Unexpected id in save", save)
     }
 
     save.temperature = Temperature.fromJSON(save.temperature)
-    return Object.setPrototypeOf(save, index[save.id])
+    return Object.setPrototypeOf(save, SaveLoader.materialModuleTree[save.id])
+  }
+
+  static fromJSON2Task(save: any) {
+    if (save.id === "undefined") {
+      console.error("[SaveLoader] Load task failed. Unexpected id in save", save)
+    }
+
+    return Object.setPrototypeOf(save, SaveLoader.taskModuleTree[save.id])
   }
 }

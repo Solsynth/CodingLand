@@ -1,11 +1,12 @@
 import { Temperature } from "@/libs/temperature"
+import { GameObject } from "@/libs/object"
 
 export type MaterialType = "gas" | "liquid" | "solid"
 
 export const MaterialChangeTemperature = 3
 
 // Base class of materials
-export class Material {
+export class Material extends GameObject {
   // Material type id
   id = "undefined"
 
@@ -18,7 +19,8 @@ export class Material {
   static attributes = {
     standable: true,
     unbreakable: true,
-    replaceable: true
+    replaceable: true,
+    hardness: 200,
   }
 
   // Material display styles
@@ -47,7 +49,11 @@ export class Material {
   // The temperature at which the material condensation/solidification
   nextTemperature?: Temperature
 
+  // The material health
+  durability: number = 100
+
   constructor(mass: number = 0, temperature: Temperature = new Temperature(0)) {
+    super()
     this.mass = mass
     this.temperature = temperature
   }
