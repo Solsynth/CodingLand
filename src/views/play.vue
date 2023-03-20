@@ -13,7 +13,7 @@
             <div class="flex justify-center items-center" style="height: calc(100% - 32px)">
               <div>
                 <div id="scene" />
-                <q-popup-proxy :target="details.element" :model-value="details.info != null">
+                <q-popup-proxy :target="details.element" :model-value="details.info != null" v-if="pid === -1">
                   <div>
                     <q-banner>
                       <div class="text-bold">Material</div>
@@ -123,24 +123,65 @@
         <q-bar>Editor</q-bar>
       </template>
     </q-splitter>
+
+    <q-dialog v-model="modals.over" persistent>
+      <q-card class="q-pa-md">
+        <q-card-section>
+          <div class="text-h6">Game Over</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <div>All robots are either dead or wounded. Game over.</div>
+          <div>In this time, you dug those materials:</div>
+          <ol>
+            <li v-for="(item, i) in Object.entries($instance.inventory)" :key="i">
+              {{ item[0] }} {{ item[1] }}kg
+            </li>
+          </ol>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <div>Based on the value of each material, your final score is</div>
+          <div class="text-h4">{{ score }}</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <div>Good job bro! Keep it up next time!</div>
+          <div>Share your score to your friend.</div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Back Menu" color="primary" :to="{name: 'main-menu'}" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref, watch } from "vue"
+import { computed, onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
 import { v4 as uuidv4 } from "uuid"
 import { RobotEntity } from "@/libs/entities/robot"
 import type { Coordinate } from "@/libs/map"
+import { useLocalStorage } from "@vueuse/core"
 
 const $instance = useGameInstance().instance
 
 const splitters = reactive([50, 50, 50])
 const modes = reactive({ slide1: "console" })
 
+const score = computed(() => {
+  let score = 0
+  for (let entry of Object.entries($instance.inventory)) {
+    // Ignore material value for now
+    score += entry[1]
+  }
+  return score
+})
+
 const pid = ref(-1)
 const focus = reactive<any>({ element: null, layer: 0, position: null, robot: null })
 const details = reactive<any>({ element: false, info: null })
+const modals = reactive({ over: false })
 const configuration = reactive({
   tile: { size: 20 }
 })
@@ -177,12 +218,16 @@ function render() {
       tileElement.append(entityElement)
     }
     tileElement.addEventListener("mouseover", () => {
-      details.element = `#${tileElement.id}`
-      details.info = tile
+      if (pid.value === -1) {
+        details.element = `#${tileElement.id}`
+        details.info = tile
+      }
     })
     tileElement.addEventListener("mouseout", () => {
-      details.element = false
-      details.info = null
+      if (pid.value === -1) {
+        details.element = false
+        details.info = null
+      }
     })
     tileElement.addEventListener("click", () => {
       focus.element = `#${tileElement.id}`
@@ -253,6 +298,20 @@ onMounted(() => {
 
 watch($instance, () => {
   render()
+
+  let alive = false
+  for (const robot of Object.values($instance.robots)) {
+    if (robot.power > 0 && robot.health > 0) {
+      alive = true
+    }
+  }
+
+  if (!alive) {
+    modals.over = true
+    if (pid.value !== -1) {
+      pause()
+    }
+  }
 }, { deep: true })
 </script>
 

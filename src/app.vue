@@ -2,9 +2,9 @@
   <q-layout view="hHh LpR fFf">
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
-        <q-btn dense flat round icon="mdi-menu" @click="layouts.drawer.left = !layouts.drawer.left" />
+        <q-btn dense flat round icon="mdi-code-tags" @click="versions = !versions" />
 
-        <q-toolbar-title>CodingLand</q-toolbar-title>
+        <q-toolbar-title>{{ versions ? "Alpha v0.0.2" : "CodingLand" }}</q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -22,6 +22,8 @@
 
 <script lang="ts" setup>
 import { useLayoutOptions } from "@/stores/layouts"
+import { ref } from "vue"
 
 const layouts = useLayoutOptions().options
+const versions = ref(false)
 </script>
