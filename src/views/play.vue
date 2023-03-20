@@ -4,7 +4,12 @@
       <template v-slot:before>
         <q-splitter v-model="splitters[1]" horizontal>
           <template v-slot:before>
-            <q-bar>Game Scene</q-bar>
+            <q-bar>
+              <div>Game Scene</div>
+              <q-space />
+              <q-btn dense flat icon="mdi-play" v-if="pid === -1" @click="start" />
+              <q-btn dense flat icon="mdi-pause" v-else @click="pause" />
+            </q-bar>
             <div class="flex justify-center items-center" style="height: calc(100% - 32px)">
               <div>
                 <div id="scene" />
@@ -23,17 +28,8 @@
                       <div class="q-mt-sm" v-if="details.info?.entities.length > 0">
                         <div class="text-bold">Entities</div>
                         <div v-for="(entity, i) in details.info?.entities" :key="i">
-                          <div class="text-bold">{{ entity.name }}</div>
-                          <div>
-                            {{ entity.id }}
-                            {{
-                              entity.facing === "north" ?
-                                "↑" : entity.facing === "south" ?
-                                  "↓" : entity.facing === "west" ? "←" : "→"
-                            }}
-                            ({{ entity.health }}%)
-                            {{ focus.robot?.name === entity.name ? "√" : "" }}
-                          </div>
+                          <div class="text-bold text-capitalize">{{ entity.name }}&nbsp;{{ entity.facing }}</div>
+                          <div>{{ entity.id }}</div>
                           <div v-if="i >= 1" class="q-mb-md" />
                         </div>
                       </div>
@@ -49,13 +45,13 @@
                 <q-bar>
                   <div>Console</div>
                   <q-space />
-                  <q-btn dense flat icon="mdi-delete" @click="$instance.console.messages = []">
+                  <q-btn dense flat icon="mdi-delete" @click="$instance.messages = []">
                     <q-tooltip>
                       Clear Console
                     </q-tooltip>
                   </q-btn>
                 </q-bar>
-                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="$instance.console.messages" separator
+                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="$instance.messages" separator
                                   v-slot="{ item, index }">
                   <q-item :key="index" dense>
                     <q-item-section avatar>
@@ -72,11 +68,30 @@
                 </q-virtual-scroll>
               </q-tab-panel>
 
+              <q-tab-panel class="q-pa-none" name="robots">
+                <q-bar>Robots</q-bar>
+                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.values($instance.robots)"
+                                  separator v-slot="{ item, index }">
+                  <q-item :key="index">
+                    <q-item-section>
+                      <q-item-label>
+                        <span>{{ item.name }}</span>&nbsp;
+                        <span>{{ focus.robot?.name === item.name ? "√" : "" }}</span>
+                      </q-item-label>
+                      <q-item-label caption>
+                        <span>Battery {{ item.power }}kJ</span>&nbsp;
+                        <span>Health {{ item.health }}%</span>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-virtual-scroll>
+              </q-tab-panel>
+
               <q-tab-panel class="q-pa-none" name="inventory">
                 <q-bar>Inventory</q-bar>
-                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.entries($instance.instance.inventory)"
+                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.entries($instance.inventory)"
                                   separator v-slot="{ item, index }">
-                  <q-item :key="index" dense>
+                  <q-item :key="index">
                     <q-item-section>
                       <q-item-label>{{ item[0] }}</q-item-label>
                       <q-item-label caption>{{ item[1] }}kg</q-item-label>
@@ -96,6 +111,7 @@
               narrow-indicator
             >
               <q-tab name="console" label="Console" />
+              <q-tab name="robots" label="Robots" />
               <q-tab name="inventory" label="Inventory" />
             </q-tabs>
           </template>
@@ -109,16 +125,18 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, watch } from "vue"
+import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
 import { v4 as uuidv4 } from "uuid"
 import { RobotEntity } from "@/libs/entities/robot"
+import type { Coordinate } from "@/libs/map"
 
-const $instance = useGameInstance()
+const $instance = useGameInstance().instance
 
 const splitters = reactive([50, 50, 50])
 const modes = reactive({ slide1: "console" })
 
+const pid = ref(-1)
 const focus = reactive<any>({ element: null, layer: 0, position: null, robot: null })
 const details = reactive<any>({ element: false, info: null })
 const configuration = reactive({
@@ -134,11 +152,11 @@ function render() {
   }
 
   // Set height and width
-  sense.style.width = `${configuration.tile.size * $instance.instance.map.size.x}px`
-  sense.style.height = `${configuration.tile.size * $instance.instance.map.size.y}px`
+  sense.style.width = `${configuration.tile.size * $instance.map.size.x}px`
+  sense.style.height = `${configuration.tile.size * $instance.map.size.y}px`
   sense.style.fontSize = `${0}px`
 
-  $instance.instance.map.forEach((tile) => {
+  $instance.map.forEach((tile) => {
     const tileElement = document.createElement("div")
     tileElement.id = `tiles-${uuidv4()}`
     tileElement.style.backgroundColor = tile.material.prototype.constructor.style.color
@@ -175,16 +193,25 @@ function render() {
           focus.position = tile.position
           focus.robot = robots[focus.layer]
           focus.layer = robots.length <= focus.layer + 1 ? focus.layer : focus.layer + 1
-          $instance.log("info", `You are controlling the robot ${focus.robot.name}`)
+          $instance.messages.push({ level: "info", message: `You are controlling the robot ${focus.robot.name}` })
         }
       } else {
-        $instance.log("info", `You no longer control the robot ${focus.robot.name}`)
+        $instance.messages.push({ level: "info", message: `You no longer control the robot ${focus.robot.name}` })
         focus.robot = null
         focus.position = null
       }
     })
     sense.append(tileElement)
   })
+}
+
+function start() {
+  pid.value = $instance.start()
+}
+
+function pause() {
+  $instance.pause(pid.value)
+  pid.value = -1
 }
 
 onMounted(() => {
@@ -196,36 +223,35 @@ onMounted(() => {
 
   // Keyboard listener
   document.addEventListener("keydown", (event) => {
+    if (pid.value == -1) {
+      return
+    }
     // Keyboard control robot events
     if (focus.robot != null) {
       switch (event.key.toLowerCase()) {
         case "w":
-          [focus.position] = focus.robot.move($instance.instance, focus.position, "north")
+          focus.robot.move($instance, focus.position, "north", (n: Coordinate) => focus.position = n)
           break
         case "a":
-          [focus.position] = focus.robot.move($instance.instance, focus.position, "west")
+          focus.robot.move($instance, focus.position, "west", (n: Coordinate) => focus.position = n)
           break
         case "s":
-          [focus.position] = focus.robot.move($instance.instance, focus.position, "south")
+          focus.robot.move($instance, focus.position, "south", (n: Coordinate) => focus.position = n)
           break
         case "d":
-          [focus.position] = focus.robot.move($instance.instance, focus.position, "east")
+          focus.robot.move($instance, focus.position, "east", (n: Coordinate) => focus.position = n)
           break
         case " ":
-          focus.robot.dig($instance.instance, focus.position)
+          focus.robot.dig($instance, focus.position)
           break
       }
     }
   })
 })
 
-watch($instance.instance, () => {
+watch($instance, () => {
   render()
 }, { deep: true })
-
-onMounted(() => {
-  $instance.instance.start()
-})
 </script>
 
 <style scoped>

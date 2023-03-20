@@ -1,10 +1,10 @@
+import type { GameInstance } from "@/libs/instance"
 
 export class GameObject {
-  whenUpdate() {
-
+  whenUpdate(instance: GameInstance) {
   }
 
-  whenNextCycle() {
-
+  beforeExecuteTask(instance: GameInstance, task: unknown): boolean {
+    return true
   }
 }

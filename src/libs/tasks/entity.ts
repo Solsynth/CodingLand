@@ -5,6 +5,7 @@ import type { GameInstance } from "@/libs/instance"
 import type { Entity } from "@/libs/entity"
 import { VacuumMaterial } from "@/libs/materials/vacuum"
 import { Temperature } from "@/libs/temperature"
+import type { Material } from "@/libs/material"
 
 export class EntityMoveTask extends Task {
   id = join(defaults.namespace, "tasks", "entity.move")
@@ -38,8 +39,8 @@ export class EntityMoveTask extends Task {
         const entities = instance.map.tiles[this.data.start.x][this.data.start.y].entities
         instance.map.tiles[this.data.start.x][this.data.start.y].entities = entities.filter((v) => v.name !== this.data.innerEntity?.name)
         instance.map.tiles[this.data.position.x][this.data.position.y].entities.push(this.data.innerEntity)
+        this.callback != null && this.callback(this)
       }
-      this.callback != null && this.callback(this)
     }
   }
 }
@@ -47,16 +48,17 @@ export class EntityMoveTask extends Task {
 export class EntityDigTask extends Task {
   id = join(defaults.namespace, "tasks", "entity.dig")
 
-  data: { position?: Coordinate } = {}
+  data: { material?: Material, position?: Coordinate } = {}
 
-  constructor(position?: Coordinate, priority = 5) {
+  constructor(material?: Material, position?: Coordinate, priority = 5) {
     super(priority)
 
+    this.data.material = material
     this.data.position = position
   }
 
   get executable() {
-    return this.data.position != null
+    return this.data.material != null && this.data.position != null
   }
 
   action(instance: GameInstance) {

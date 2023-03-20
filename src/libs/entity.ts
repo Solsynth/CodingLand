@@ -50,7 +50,7 @@ export class Entity extends GameObject {
     instance.inventory[material.id] = (instance.inventory[material.id] ?? 0) + material.mass
   }
 
-  move(instance: GameInstance, start: Coordinate, facing: Direction): [Coordinate, boolean] {
+  move(instance: GameInstance, start: Coordinate, facing: Direction, callback: (n: Coordinate) => void): boolean {
     let abs: Coordinate | null = null
     const position = DirectionRelativePosition[facing]
 
@@ -59,7 +59,7 @@ export class Entity extends GameObject {
       if (coordinate.x == position.x && coordinate.y == position.y) {
         abs = { x: start.x + position.x, y: start.y + position.y }
         if (!instance.map.inRange(abs)) {
-          return [start, true]
+          return false
         } else {
           break
         }
@@ -67,11 +67,12 @@ export class Entity extends GameObject {
     }
 
     if (abs == null) {
-      return [start, false]
+      return false
     } else {
       const task = new EntityMoveTask(this, start, abs, facing)
+      task.callback = () => callback(abs as Coordinate)
       this.tasks.push(task)
-      return [abs, true]
+      return false
     }
   }
 
@@ -95,9 +96,9 @@ export class Entity extends GameObject {
     if (abs == null) {
       return false
     } else {
-      const task = new EntityDigTask(abs)
+      const task = new EntityDigTask(instance.map.tiles[abs.x][abs.y].material, abs)
       task.callback = (task) => {
-        this.store(instance, instance.map.tiles[task.data.position.x][task.data.position.y].material)
+        this.store(instance, task.data.material)
       }
 
       this.tasks.push(task)

@@ -14,7 +14,7 @@ export const useGameInstance = defineStore("play-instance", () => {
       },
       write(v) {
         return JSON.stringify(v, (k, v) => {
-          if(k === "innerEntity") {
+          if (k === "innerEntity") {
             return undefined
           } else {
             return v
@@ -23,18 +23,12 @@ export const useGameInstance = defineStore("play-instance", () => {
       }
     }
   })
-  const console = reactive<{ messages: any[] }>({ messages: [] })
+
   const instance = reactive<GameInstance>(store.value ? SaveLoader.fromJSON2Instance(store.value) : new GameInstance())
 
   watch(instance, (v) => {
     store.value = v
   }, { deep: true, immediate: true })
 
-  function log(level: "debug" | "info" | "warning" | "error" | "fatal", ...messages: any[]) {
-    for (const message of messages) {
-      console.messages.push({ level, message: message.toString() })
-    }
-  }
-
-  return { instance, console, log }
+  return { instance }
 })

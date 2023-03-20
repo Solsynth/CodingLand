@@ -20,12 +20,20 @@ export class Task {
 
   // Task operations
   action(instance: GameInstance) {
-    if(!this.executable) {
+    if (!this.executable) {
       return
     }
   }
 }
 
 export function sortTasks(tasks: Task[]) {
-
+  tasks.sort((first, second) => {
+    if (first.priority < second.priority) {
+      return -1
+    } else if (first.priority > second.priority) {
+      return 1
+    } else {
+      return 0
+    }
+  })
 }

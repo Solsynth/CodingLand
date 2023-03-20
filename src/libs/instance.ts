@@ -27,9 +27,6 @@ export class GameInstance {
   // Messages in game
   messages: { level: LoggerLevel, message: string }[] = []
 
-  // Game pause status
-  isPaused = false
-
   // Game time
   inGameTime = 0
 
@@ -40,23 +37,40 @@ export class GameInstance {
 
   newGame(randomGenerator: IMapGenerator) {
     randomGenerator.generate(this.map.size.x, this.map.size.y)
-    randomGenerator.placeRobot(1).forEach((v) => this.robots[v.name] = v)
+    randomGenerator.placeRobot(1).forEach((v) => {
+      if (v instanceof RobotEntity) {
+        this.robots[v.name] = v
+      }
+    })
+
     this.map.tiles = randomGenerator.tiles
   }
 
-  start() {
-    setInterval(() => {
+  start(): number {
+    return setInterval(() => {
       this.doUpdate()
       this.inGameTime++
     }, 1000)
   }
 
+  pause(id: number) {
+    clearInterval(id)
+  }
+
   doUpdate() {
     this.map.forEach((tile) => {
+      tile.material.whenUpdate(this)
       for (const entity of tile.entities) {
+        entity.whenUpdate(this)
+        console.log(entity.tasks)
         for (let i = 0; i < entity.tasks.length; i++) {
-          entity.tasks[i].action(this)
-          entity.tasks.splice(i)
+          console.log(entity.tasks[i])
+          if(!entity.beforeExecuteTask(this, entity.tasks[i])) {
+            entity.tasks.splice(i)
+          } else {
+            entity.tasks[i].action(this)
+            entity.tasks.splice(i)
+          }
         }
       }
     })
