@@ -6,6 +6,8 @@
       <div class="q-pt-md">
         <q-btn flat color="primary" @click="start">Start Game</q-btn>
       </div>
+
+      <div class="text-caption">v0.0.1</div>
     </div>
   </q-page>
 </template>
@@ -19,7 +21,7 @@ const $instance = useGameInstance()
 const $router = useRouter()
 
 function start() {
-  $instance.map.randomGenerate(new EarthMapGenerator(), 20, 20)
+  $instance.instance.start(new EarthMapGenerator())
   $router.push({ name: "play" })
 }
 </script>

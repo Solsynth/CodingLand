@@ -12,20 +12,20 @@
                   <div>
                     <q-banner>
                       <div class="text-bold">Material</div>
-                      <div>{{ details.info?.material.type }}</div>
+                      <div>{{ details.info?.material.id }}</div>
                       <div class="text-bold">Position</div>
                       <div>{{ details.info?.position.x }}, {{ details.info?.position.y }}</div>
                       <div class="text-bold">Temperature</div>
-                      <div>{{ details.info?.material.temperature.toString("kelvin") }}K</div>
+                      <div>{{ details.info?.material.temperature.toString("celsius") }}C</div>
                       <div class="text-bold">Mass</div>
-                      <div>{{ details.info?.mass }}kg</div>
+                      <div>{{ details.info?.material.mass }}kg</div>
 
                       <div class="q-mt-sm" v-if="details.info?.entities.length > 0">
                         <div class="text-bold">Entities</div>
                         <div v-for="(entity, i) in details.info?.entities" :key="i">
                           <div class="text-bold">{{ entity.name }}</div>
                           <div>
-                            {{ entity.type }}
+                            {{ entity.id }}
                             {{
                               entity.facing === "north" ?
                                 "↑" : entity.facing === "south" ?
@@ -74,7 +74,7 @@
 
               <q-tab-panel class="q-pa-none" name="inventory">
                 <q-bar>Inventory</q-bar>
-                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.entries($instance.map.inventory)"
+                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.entries($instance.instance.inventory)"
                                   separator v-slot="{ item, index }">
                   <q-item :key="index" dense>
                     <q-item-section>
@@ -109,10 +109,10 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, reactive, watch } from "vue"
+import { onMounted, reactive, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
-import { EntityTypes } from "@/libs/entity"
 import { v4 as uuidv4 } from "uuid"
+import { RobotEntity } from "@/libs/entities/robot"
 
 const $instance = useGameInstance()
 
@@ -134,21 +134,21 @@ function render() {
   }
 
   // Set height and width
-  sense.style.width = `${configuration.tile.size * $instance.map.size.x}px`
-  sense.style.height = `${configuration.tile.size * $instance.map.size.y}px`
+  sense.style.width = `${configuration.tile.size * $instance.instance.map.size.x}px`
+  sense.style.height = `${configuration.tile.size * $instance.instance.map.size.y}px`
   sense.style.fontSize = `${0}px`
 
-  $instance.map.forEach((tile) => {
+  $instance.instance.map.forEach((tile) => {
     const tileElement = document.createElement("div")
     tileElement.id = `tiles-${uuidv4()}`
-    tileElement.style.backgroundColor = tile.material.getColor()
+    tileElement.style.backgroundColor = Object.getPrototypeOf(tile.material).constructor.style.color
     tileElement.style.height = `${configuration.tile.size}px`
     tileElement.style.width = `${configuration.tile.size}px`
     tileElement.className = "element-tiles"
     for (const entity of tile.entities) {
       const entityElement = document.createElement("div")
       tileElement.id = `tiles-${uuidv4()}`
-      entityElement.style.backgroundColor = entity.getColor()
+      entityElement.style.backgroundColor = Object.getPrototypeOf(entity).constructor.style.color
       entityElement.style.height = `${configuration.tile.size}px`
       entityElement.style.width = `${configuration.tile.size}px`
       entityElement.style.borderRadius = "50%"
@@ -170,7 +170,7 @@ function render() {
         if (focus.element !== `#${tileElement.id}`) {
           focus.layer = 0
         }
-        const robots = tile.entities.filter((v) => v.type == EntityTypes.ROBOT)
+        const robots = tile.entities.filter((v) => v instanceof RobotEntity)
         if (robots.length > 0) {
           focus.position = tile.position
           focus.robot = robots[focus.layer]
@@ -201,31 +201,19 @@ onMounted(() => {
       let status: boolean = false
       switch (event.key.toLowerCase()) {
         case "w":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
-            x: -1,
-            y: 0
-          }, "north")
+          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "north")
           break
         case "a":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
-            x: 0,
-            y: -1
-          }, "west")
+          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "west")
           break
         case "s":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
-            x: 1,
-            y: 0
-          }, "south")
+          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "south")
           break
         case "d":
-          [$instance.map, focus.position, status] = focus.robot.move($instance.map, focus.position, {
-            x: 0,
-            y: 1
-          }, "east")
+          [focus.position, status] = focus.robot.move($instance.instance, focus.position, "east")
           break
         case " ":
-          [$instance.map, status] = focus.robot.dig($instance.map, focus.position)
+          status = focus.robot.dig($instance.instance, focus.position)
           break
       }
       !status && $instance.log("warning", "Control robot execute operation failed")
@@ -233,7 +221,7 @@ onMounted(() => {
   })
 })
 
-watch($instance.map, () => {
+watch($instance.instance, () => {
   render()
 }, { deep: true })
 </script>

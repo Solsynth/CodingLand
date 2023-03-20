@@ -1,14 +1,15 @@
-import { Map } from "@/libs/map"
 import { defineStore } from "pinia"
 import { reactive, watch } from "vue"
 import { useLocalStorage } from "@vueuse/core"
+import { GameInstance } from "@/libs/instance"
+import { SaveLoader } from "@/libs/loader"
 
 export const useGameInstance = defineStore("play-instance", () => {
-  const store = useLocalStorage<Map>("world-save", new Map([], { x: 0, y: 0 }))
-  const console = reactive<any>({ messages: [] })
-  const map = reactive<Map>(store.value ? Map.fromJSON(store.value) : new Map([], { x: 0, y: 0 }))
+  const store = useLocalStorage<GameInstance>("world-save", new GameInstance())
+  const console = reactive<{ messages: any[] }>({ messages: [] })
+  const instance = reactive<GameInstance>(store.value ? SaveLoader.fromJSON2Instance(store.value) : new GameInstance())
 
-  watch(map, (v) => {
+  watch(instance, (v) => {
     store.value = v
   }, { deep: true, immediate: true })
 
@@ -18,5 +19,5 @@ export const useGameInstance = defineStore("play-instance", () => {
     }
   }
 
-  return { map, console, log }
+  return { instance, console, log }
 })
