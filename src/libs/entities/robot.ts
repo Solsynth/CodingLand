@@ -18,7 +18,9 @@ export class RobotEntity extends Entity {
 
   whenUpdate(instance: GameInstance) {
     super.whenUpdate(instance)
-    this.power > 0 && this.power--
+    if (this.power > 0) {
+      this.power -= 1 // Use 1Wh battery power every tick(100 millisecond)
+    }
   }
 
   beforeExecuteTask(instance: GameInstance, task: unknown): boolean {

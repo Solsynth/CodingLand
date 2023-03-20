@@ -28,6 +28,7 @@ export class EntityMoveTask extends Task {
   action(instance: GameInstance) {
     super.action(instance)
     if (this.data.innerEntity == null || this.data.facing == null || this.data.start == null || this.data.position == null) {
+      this.destroyable = true
       return
     } else {
       instance.map.tiles[this.data.start.x][this.data.start.y].entities.forEach((v) => {
@@ -41,6 +42,7 @@ export class EntityMoveTask extends Task {
         instance.map.tiles[this.data.position.x][this.data.position.y].entities.push(this.data.innerEntity)
         this.callback != null && this.callback(this)
       }
+      this.destroyable = true
     }
   }
 }
@@ -64,11 +66,23 @@ export class EntityDigTask extends Task {
   action(instance: GameInstance) {
     super.action(instance)
     if (this.data.position == null) {
+      this.destroyable = true
       return
     } else {
-      instance.map.tiles[this.data.position.x][this.data.position.y].mass = 0
-      instance.map.tiles[this.data.position.x][this.data.position.y].material = new VacuumMaterial(0, new Temperature(0))
-      this.callback != null && this.callback(this)
+      const hardness = instance.map.tiles[this.data.position.x][this.data.position.y].material.prototype.constructor.attributes.hardness
+      const efficiency = 100 / hardness // All Digging Speed = Base Digging Speed(100) / Hardness
+      instance.map.tiles[this.data.position.x][this.data.position.y].material.durability -= efficiency
+
+      const remain = instance.map.tiles[this.data.position.x][this.data.position.y].material.durability
+      instance.messages.push({ level: "info", message: `Digging complete ${remain}%` })
+
+      if (remain <= 0) {
+        instance.messages.push({ level: "info", message: "Digging completed." })
+        instance.map.tiles[this.data.position.x][this.data.position.y].mass = 0
+        instance.map.tiles[this.data.position.x][this.data.position.y].material = new VacuumMaterial(0, new Temperature(0))
+        this.destroyable = true
+        this.callback != null && this.callback(this)
+      }
     }
   }
 }

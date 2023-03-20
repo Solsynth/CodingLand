@@ -4,6 +4,7 @@ export class Task {
   id = "undefined"
 
   priority = 5
+  destroyable = false
 
   data: any = {}
 

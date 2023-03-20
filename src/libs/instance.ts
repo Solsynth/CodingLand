@@ -50,7 +50,7 @@ export class GameInstance {
     return setInterval(() => {
       this.doUpdate()
       this.inGameTime++
-    }, 1000)
+    }, 100)
   }
 
   pause(id: number) {
@@ -65,10 +65,10 @@ export class GameInstance {
         console.log(entity.tasks)
         for (let i = 0; i < entity.tasks.length; i++) {
           console.log(entity.tasks[i])
-          if(!entity.beforeExecuteTask(this, entity.tasks[i])) {
-            entity.tasks.splice(i)
-          } else {
+          if (entity.beforeExecuteTask(this, entity.tasks[i])) {
             entity.tasks[i].action(this)
+          }
+          if (entity.tasks[i].destroyable) {
             entity.tasks.splice(i)
           }
         }
