@@ -2,7 +2,7 @@ import { defineStore } from "pinia"
 import { reactive, watch } from "vue"
 import { useLocalStorage } from "@vueuse/core"
 import { GameInstance } from "@/libs/instance"
-import { SaveLoader } from "@/libs/loader"
+import { GameLoader } from "@/libs/loader"
 
 const debug = console.log
 
@@ -24,7 +24,7 @@ export const useGameInstance = defineStore("play-instance", () => {
     }
   })
 
-  const instance = reactive<GameInstance>(store.value ? SaveLoader.fromJSON2Instance(store.value) : new GameInstance())
+  const instance = reactive<GameInstance>(store.value ? GameLoader.fromJSON2Instance(store.value) : new GameInstance())
 
   watch(instance, (v) => {
     store.value = v

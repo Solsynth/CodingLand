@@ -60,10 +60,12 @@ export class GameInstance {
     clearInterval(id)
   }
 
+  // Game Computing Loop Function
   doUpdate() {
     this.map.forEach((tile) => {
       tile.material.whenUpdate(this)
       for (const entity of tile.entities) {
+        tile.whenUpdate(this)
         entity.whenUpdate(this)
         if (entity.tasks.length > 0) {
           if (entity.beforeExecuteTask(this, entity.tasks[0])) {

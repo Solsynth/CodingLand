@@ -3,9 +3,15 @@ import { defaults, join } from "@/libs"
 import { NeutroniumMaterial } from "@/libs/materials/neutronium"
 import { Temperature } from "@/libs/temperature"
 import type { GameInstance } from "@/libs/instance"
+import type { Material } from "@/libs/material"
 
 export class RobotEntity extends Entity {
   id = join(defaults.namespace, "entities", "robot")
+
+  // Robot complete task speed
+  efficiency = {
+    dig: 100
+  }
 
   // Robot battery power, every tick will decrease one. When the power is 0, robot cannot do anything.
   power = 1600
@@ -15,6 +21,10 @@ export class RobotEntity extends Entity {
   }
 
   material = new NeutroniumMaterial(200, new Temperature(293.15))
+
+  calculateDiggingEst(material: Material, remain: number) {
+    return remain / (this.efficiency.dig / material.prototype.constructor.attributes.hardness)
+  }
 
   whenUpdate(instance: GameInstance) {
     super.whenUpdate(instance)

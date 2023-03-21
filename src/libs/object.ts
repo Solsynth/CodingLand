@@ -1,6 +1,14 @@
 import type { GameInstance } from "@/libs/instance"
+import chance from "chance"
 
 export class GameObject {
+  // Element id when draw on the scene
+  drawingId: string
+
+  constructor() {
+    this.drawingId = chance().guid()
+  }
+
   whenUpdate(instance: GameInstance) {
   }
 

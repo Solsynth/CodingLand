@@ -13,7 +13,7 @@
             <div class="flex justify-center items-center" style="height: calc(100% - 32px)">
               <div>
                 <div id="scene" />
-                <q-popup-proxy :target="details.element" :model-value="details.info != null" v-if="pid === -1">
+                <q-popup-proxy :target="details.element" :model-value="details.info != null">
                   <div>
                     <q-banner>
                       <div class="text-bold">Material</div>
@@ -26,6 +26,13 @@
                       <div>{{ details.info?.material.mass }}kg</div>
                       <div class="text-bold">Durability</div>
                       <div>{{ details.info?.material.durability }}%</div>
+                      <div class="text-bold">Hardness</div>
+                      <div v-if="focus.robot != null">
+                        EST
+                        {{ focus.robot.calculateDiggingEst(details.info?.material, details.info?.material.durability) }}
+                        Ticks
+                      </div>
+                      <div>{{ details.info?.material.prototype.constructor.attributes.hardness }}</div>
 
                       <div class="q-mt-sm" v-if="details.info?.entities.length > 0">
                         <div class="text-bold">Entities</div>
@@ -149,7 +156,7 @@
         </q-card-section>
 
         <q-card-actions align="center">
-          <q-btn flat label="Main Menu" color="primary" :to="{name: 'main-menu'}" />
+          <q-btn flat label="Main Menu" color="primary" style="width: 100%" :to="{name: 'main-menu'}" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -157,12 +164,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from "vue"
+import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
-import { v4 as uuidv4 } from "uuid"
 import { RobotEntity } from "@/libs/entities/robot"
 import type { Coordinate } from "@/libs/map"
-import { useLocalStorage } from "@vueuse/core"
 
 const $instance = useGameInstance().instance
 
@@ -192,16 +197,18 @@ function render() {
 
   $instance.map.forEach((tile) => {
     const tileElement = document.createElement("div")
-    tileElement.id = `tiles-${uuidv4()}`
-    tileElement.style.backgroundColor = tile.material.prototype.constructor.style.color
+    tileElement.id = `tiles-${tile.drawingId}`
+    tileElement.style.backgroundColor = tile.material.prototype.constructor.style?.color
+    tileElement.style.content = tile.material.prototype.constructor.style?.content
     tileElement.style.height = `${configuration.tile.size}px`
     tileElement.style.width = `${configuration.tile.size}px`
     tileElement.style.border = `${configuration.tile.size / 2 - tile.material.durability / 10}px solid black` // Display digging progress
     tileElement.className = "element-tiles"
     for (const entity of tile.entities) {
       const entityElement = document.createElement("div")
-      tileElement.id = `tiles-${uuidv4()}`
-      entityElement.style.backgroundColor = entity.prototype.constructor.style.color
+      entityElement.id = `tiles-${entity.drawingId}`
+      entityElement.style.backgroundColor = entity.prototype.constructor.style?.color
+      entityElement.style.content = tile.material.prototype.constructor.style?.content
       entityElement.style.height = `${configuration.tile.size}px`
       entityElement.style.width = `${configuration.tile.size}px`
       entityElement.style.borderRadius = "50%"
@@ -210,16 +217,12 @@ function render() {
       tileElement.append(entityElement)
     }
     tileElement.addEventListener("mouseover", () => {
-      if (pid.value === -1) {
-        details.element = `#${tileElement.id}`
-        details.info = tile
-      }
+      details.element = `#${tileElement.id}`
+      details.info = tile
     })
     tileElement.addEventListener("mouseout", () => {
-      if (pid.value === -1) {
-        details.element = false
-        details.info = null
-      }
+      details.element = false
+      details.info = null
     })
     tileElement.addEventListener("click", () => {
       focus.element = `#${tileElement.id}`

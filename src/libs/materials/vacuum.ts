@@ -13,7 +13,7 @@ export class VacuumMaterial extends Material {
   }
 
   static style = {
-    color: "blue"
+    color: "black",
   }
 
   static type: MaterialType = "gas"

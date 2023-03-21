@@ -73,14 +73,16 @@ export class EntityDigTask extends Task {
       const efficiency = 100 / hardness // All Digging Speed = Base Digging Speed(100) / Hardness
       instance.map.tiles[this.data.position.x][this.data.position.y].material.durability -= efficiency
 
+      console.log("Digging timestamp: " + instance.inGameTime)
       const remain = instance.map.tiles[this.data.position.x][this.data.position.y].material.durability
 
       if (remain <= 0) {
+        console.log("Digging completed timestamp: " + instance.inGameTime)
         this.destroyable = true
         // Add score into instance
         const material = instance.map.tiles[this.data.position.x][this.data.position.y].material
         instance.score += material.mass * material.prototype.constructor.attributes.hardness
-          // Clear tile material
+        // Clear tile material
         instance.map.tiles[this.data.position.x][this.data.position.y].material = new VacuumMaterial(0, new Temperature(0))
         this.callback != null && this.callback(this)
       }

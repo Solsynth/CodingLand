@@ -1,5 +1,6 @@
 import type { Material } from "@/libs/material"
 import type { Entity } from "@/libs/entity"
+import { GameObject } from "@/libs/object"
 
 export type Coordinate = { x: number, y: number }
 
@@ -12,7 +13,7 @@ export const DirectionRelativePosition: { [id: string]: Coordinate } = {
   east: { x: 0, y: 1 }
 }
 
-export class MapTile {
+export class MapTile extends GameObject {
   // Tile absolute position
   position: Coordinate
 
@@ -28,6 +29,7 @@ export class MapTile {
   mass: number
 
   constructor(position: Coordinate, material: Material, mass: number) {
+    super()
     this.position = position
     this.material = material
     this.mass = mass

@@ -7,10 +7,10 @@ import { entityModules } from "@/libs/entities"
 import { materialModules } from "@/libs/materials"
 import { taskModules } from "@/libs/tasks"
 
-export class SaveLoader {
-  static entityModuleTree = SaveLoader.modulesTreeBuilder("entities", ...entityModules)
-  static materialModuleTree = SaveLoader.modulesTreeBuilder("materials", ...materialModules)
-  static taskModuleTree = SaveLoader.modulesTreeBuilder("tasks", ...taskModules)
+export class GameLoader {
+  static entityModuleTree = GameLoader.modulesTreeBuilder("entities", ...entityModules)
+  static materialModuleTree = GameLoader.modulesTreeBuilder("materials", ...materialModules)
+  static taskModuleTree = GameLoader.modulesTreeBuilder("tasks", ...taskModules)
   static modulesTreeBuilder(namespace: string, ...modules: any[]) {
     const tree: { [id: string]: Material } = {}
     for (const module of modules) {
@@ -22,7 +22,7 @@ export class SaveLoader {
   }
 
   static fromJSON2Instance(save: any): GameInstance {
-    save.map = SaveLoader.fromJSON2Map(save.map)
+    save.map = GameLoader.fromJSON2Map(save.map)
     return Object.setPrototypeOf(save, GameInstance.prototype)
   }
 
@@ -31,7 +31,7 @@ export class SaveLoader {
     for (const rows of save.tiles) {
       const buffer: MapTile[] = []
       for (const tile of rows) {
-        buffer.push(SaveLoader.fromJSON2MapTile(tile))
+        buffer.push(GameLoader.fromJSON2MapTile(tile))
       }
       tiles.push(buffer)
     }
@@ -42,17 +42,17 @@ export class SaveLoader {
   static fromJSON2MapTile(save: any): MapTile {
     const entities: Entity[] = []
     for (const entity of save.entities) {
-      entities.push(SaveLoader.fromJSON2Entity(entity))
+      entities.push(GameLoader.fromJSON2Entity(entity))
     }
     save.entities = entities
-    save.material = SaveLoader.fromJSON2Material(save.material)
+    save.material = GameLoader.fromJSON2Material(save.material)
     return Object.setPrototypeOf(save, MapTile.prototype)
   }
 
   static fromJSON2Entity(save: any): Entity {
     const tasks = []
     for(const task of save.tasks) {
-      tasks.push(SaveLoader.fromJSON2Task(task))
+      tasks.push(GameLoader.fromJSON2Task(task))
     }
     save.tasks = tasks
 
@@ -60,8 +60,8 @@ export class SaveLoader {
       console.error("[SaveLoader] Load entity failed. Unexpected id in save", save)
     }
 
-    save.material = SaveLoader.fromJSON2Material(save.material)
-    return Object.setPrototypeOf(save, SaveLoader.entityModuleTree[save.id])
+    save.material = GameLoader.fromJSON2Material(save.material)
+    return Object.setPrototypeOf(save, GameLoader.entityModuleTree[save.id])
   }
 
   static fromJSON2Material(save: any): Material {
@@ -70,7 +70,7 @@ export class SaveLoader {
     }
 
     save.temperature = Temperature.fromJSON(save.temperature)
-    return Object.setPrototypeOf(save, SaveLoader.materialModuleTree[save.id])
+    return Object.setPrototypeOf(save, GameLoader.materialModuleTree[save.id])
   }
 
   static fromJSON2Task(save: any) {
@@ -78,6 +78,6 @@ export class SaveLoader {
       console.error("[SaveLoader] Load task failed. Unexpected id in save", save)
     }
 
-    return Object.setPrototypeOf(save, SaveLoader.taskModuleTree[save.id])
+    return Object.setPrototypeOf(save, GameLoader.taskModuleTree[save.id])
   }
 }
