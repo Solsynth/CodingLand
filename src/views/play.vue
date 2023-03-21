@@ -141,15 +141,15 @@
         </q-card-section>
         <q-card-section class="q-pt-none">
           <div>Based on the value of each material, your final score is</div>
-          <div class="text-h4">{{ score }}</div>
+          <div class="text-h4">{{ $instance.score }}</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
           <div>Good job bro! Keep it up next time!</div>
           <div>Share your score to your friend.</div>
         </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Back Menu" color="primary" :to="{name: 'main-menu'}" />
+        <q-card-actions align="center">
+          <q-btn flat label="Main Menu" color="primary" :to="{name: 'main-menu'}" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -168,15 +168,6 @@ const $instance = useGameInstance().instance
 
 const splitters = reactive([50, 50, 50])
 const modes = reactive({ slide1: "console" })
-
-const score = computed(() => {
-  let score = 0
-  for (let entry of Object.entries($instance.inventory)) {
-    // Ignore material value for now
-    score += entry[1]
-  }
-  return score
-})
 
 const pid = ref(-1)
 const focus = reactive<any>({ element: null, layer: 0, position: null, robot: null })
@@ -205,6 +196,7 @@ function render() {
     tileElement.style.backgroundColor = tile.material.prototype.constructor.style.color
     tileElement.style.height = `${configuration.tile.size}px`
     tileElement.style.width = `${configuration.tile.size}px`
+    tileElement.style.border = `${configuration.tile.size / 2 - tile.material.durability / 10}px solid black` // Display digging progress
     tileElement.className = "element-tiles"
     for (const entity of tile.entities) {
       const entityElement = document.createElement("div")

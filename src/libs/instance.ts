@@ -30,6 +30,9 @@ export class GameInstance {
   // Game time
   inGameTime = 0
 
+  // Game final score
+  score = 0
+
   constructor(randomGenerator?: IMapGenerator) {
     this.map = new Map([], { x: 20, y: 20 })
     randomGenerator != null && this.newGame(randomGenerator)
@@ -48,8 +51,8 @@ export class GameInstance {
 
   start(): number {
     return setInterval(() => {
-      this.doUpdate()
       this.inGameTime++
+      this.doUpdate()
     }, 100)
   }
 
@@ -62,12 +65,12 @@ export class GameInstance {
       tile.material.whenUpdate(this)
       for (const entity of tile.entities) {
         entity.whenUpdate(this)
-        for (let i = 0; i < entity.tasks.length; i++) {
-          if (entity.beforeExecuteTask(this, entity.tasks[i])) {
-            entity.tasks[i].action(this)
+        if (entity.tasks.length > 0) {
+          if (entity.beforeExecuteTask(this, entity.tasks[0])) {
+            entity.tasks[0].action(this)
           }
-          if (entity.tasks[i].destroyable) {
-            entity.tasks.splice(i)
+          if (entity.tasks[0].destroyable) {
+            entity.tasks.splice(0)
           }
         }
       }

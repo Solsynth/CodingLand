@@ -74,12 +74,13 @@ export class EntityDigTask extends Task {
       instance.map.tiles[this.data.position.x][this.data.position.y].material.durability -= efficiency
 
       const remain = instance.map.tiles[this.data.position.x][this.data.position.y].material.durability
-      instance.messages.push({ level: "info", message: `Digging complete ${remain}%` })
 
       if (remain <= 0) {
         this.destroyable = true
-        instance.messages.push({ level: "info", message: "Digging completed." })
-        instance.map.tiles[this.data.position.x][this.data.position.y].mass = 0
+        // Add score into instance
+        const material = instance.map.tiles[this.data.position.x][this.data.position.y].material
+        instance.score += material.mass * material.prototype.constructor.attributes.hardness
+          // Clear tile material
         instance.map.tiles[this.data.position.x][this.data.position.y].material = new VacuumMaterial(0, new Temperature(0))
         this.callback != null && this.callback(this)
       }

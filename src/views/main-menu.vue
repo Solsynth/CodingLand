@@ -75,6 +75,7 @@ const modals = reactive({
 })
 
 function start() {
+  $instance.instance.score = 0
   $instance.instance.messages = []
   $instance.instance.inventory = {}
   $instance.instance.newGame(new EarthMapGenerator())
