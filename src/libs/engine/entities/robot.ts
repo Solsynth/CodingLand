@@ -1,17 +1,15 @@
-import { Entity } from "@/libs/entity"
-import { defaults, join } from "@/libs"
-import { NeutroniumMaterial } from "@/libs/materials/neutronium"
-import { Temperature } from "@/libs/temperature"
-import type { GameInstance } from "@/libs/instance"
-import type { Material } from "@/libs/material"
+import { Entity } from "@/libs/engine/entity"
+import { defaults, join } from "@/libs/engine"
+import { NeutroniumMaterial } from "@/libs/engine/materials/neutronium"
+import { Temperature } from "@/libs/engine/temperature"
+import type { GameInstance } from "@/libs/engine/instance"
+import type { Material } from "@/libs/engine/material"
 
 export class RobotEntity extends Entity {
   id = join(defaults.namespace, "entities", "robot")
 
-  // Robot complete task speed
-  efficiency = {
-    dig: 100
-  }
+  // Robot holding javascript
+  script = "// Start your coding here."
 
   // Robot battery power, every tick will decrease one. When the power is 0, robot cannot do anything.
   power = 1600

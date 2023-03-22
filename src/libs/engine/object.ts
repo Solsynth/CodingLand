@@ -1,4 +1,4 @@
-import type { GameInstance } from "@/libs/instance"
+import type { GameInstance } from "@/libs/engine/instance"
 import chance from "chance"
 
 export class GameObject {

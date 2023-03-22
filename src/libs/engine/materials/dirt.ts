@@ -1,6 +1,6 @@
-import type { MaterialType } from "@/libs/material"
-import { Material } from "@/libs/material"
-import { defaults, join } from "@/libs"
+import type { MaterialType } from "@/libs/engine/material"
+import { Material } from "@/libs/engine/material"
+import { defaults, join } from "@/libs/engine"
 
 export class DirtMaterial extends Material {
   id = join(defaults.namespace, "materials", "dirt")

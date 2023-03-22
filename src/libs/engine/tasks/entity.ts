@@ -1,11 +1,11 @@
-import { Task } from "@/libs/task"
-import { defaults, join } from "@/libs"
-import type { Coordinate, Direction } from "@/libs/map"
-import type { GameInstance } from "@/libs/instance"
-import type { Entity } from "@/libs/entity"
-import { VacuumMaterial } from "@/libs/materials/vacuum"
-import { Temperature } from "@/libs/temperature"
-import type { Material } from "@/libs/material"
+import { Task } from "@/libs/engine/task"
+import { defaults, join } from "@/libs/engine"
+import type { Coordinate, Direction } from "@/libs/engine/map"
+import type { GameInstance } from "@/libs/engine/instance"
+import type { Entity } from "@/libs/engine/entity"
+import { VacuumMaterial } from "@/libs/engine/materials/vacuum"
+import { Temperature } from "@/libs/engine/temperature"
+import type { Material } from "@/libs/engine/material"
 
 export class EntityMoveTask extends Task {
   id = join(defaults.namespace, "tasks", "entity.move")
@@ -37,9 +37,13 @@ export class EntityMoveTask extends Task {
         }
       })
       if (instance.map.tiles[this.data.position.x][this.data.position.y].material.prototype.constructor.attributes.standable) {
+        // Cleanup
         const entities = instance.map.tiles[this.data.start.x][this.data.start.y].entities
         instance.map.tiles[this.data.start.x][this.data.start.y].entities = entities.filter((v) => v.name !== this.data.innerEntity?.name)
+        // Place into tile
+        this.data.innerEntity.position = this.data.position
         instance.map.tiles[this.data.position.x][this.data.position.y].entities.push(this.data.innerEntity)
+        // Run callback
         this.callback != null && this.callback(this)
       }
       this.destroyable = true
@@ -50,34 +54,33 @@ export class EntityMoveTask extends Task {
 export class EntityDigTask extends Task {
   id = join(defaults.namespace, "tasks", "entity.dig")
 
-  data: { material?: Material, position?: Coordinate } = {}
+  data: { efficiency?: number, material?: Material, position?: Coordinate } = {}
 
-  constructor(material?: Material, position?: Coordinate, priority = 5) {
+  constructor(efficiency?: number, material?: Material, position?: Coordinate, priority = 5) {
     super(priority)
 
+    this.data.efficiency = efficiency
     this.data.material = material
     this.data.position = position
   }
 
   get executable() {
-    return this.data.material != null && this.data.position != null
+    return this.data.efficiency != null && this.data.material != null && this.data.position != null
   }
 
   action(instance: GameInstance) {
     super.action(instance)
-    if (this.data.position == null) {
+    if (this.data.position == null || this.data.efficiency == null) {
       this.destroyable = true
       return
     } else {
       const hardness = instance.map.tiles[this.data.position.x][this.data.position.y].material.prototype.constructor.attributes.hardness
-      const efficiency = 100 / hardness // All Digging Speed = Base Digging Speed(100) / Hardness
+      const efficiency = this.data.efficiency / hardness
       instance.map.tiles[this.data.position.x][this.data.position.y].material.durability -= efficiency
 
-      console.log("Digging timestamp: " + instance.inGameTime)
       const remain = instance.map.tiles[this.data.position.x][this.data.position.y].material.durability
 
       if (remain <= 0) {
-        console.log("Digging completed timestamp: " + instance.inGameTime)
         this.destroyable = true
         // Add score into instance
         const material = instance.map.tiles[this.data.position.x][this.data.position.y].material

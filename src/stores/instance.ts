@@ -1,8 +1,8 @@
 import { defineStore } from "pinia"
 import { reactive, watch } from "vue"
 import { useLocalStorage } from "@vueuse/core"
-import { GameInstance } from "@/libs/instance"
-import { GameLoader } from "@/libs/loader"
+import { GameInstance } from "@/libs/engine/instance"
+import { GameLoader } from "@/libs/engine/loader"
 
 const debug = console.log
 

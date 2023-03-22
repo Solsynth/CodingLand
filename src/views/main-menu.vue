@@ -58,11 +58,10 @@
 
 <script lang="ts" setup>
 import { useGameInstance } from "@/stores/instance"
-import { EarthMapGenerator } from "@/libs/map-generator"
-import { useRouter } from "vue-router"
+import { EarthMapGenerator } from "@/libs/engine/map-generator"
 import { useLocalStorage } from "@vueuse/core"
+import { useRouter } from "vue-router"
 import { reactive } from "vue"
-import { GameInstance } from "@/libs/instance"
 
 const $storage = useLocalStorage("guides-data", { unwatch: true })
 const $instance = useGameInstance()

@@ -1,6 +1,6 @@
-import type { Material } from "@/libs/material"
-import type { Entity } from "@/libs/entity"
-import { GameObject } from "@/libs/object"
+import type { Material } from "@/libs/engine/material"
+import type { Entity } from "@/libs/engine/entity"
+import { GameObject } from "@/libs/engine/object"
 
 export type Coordinate = { x: number, y: number }
 

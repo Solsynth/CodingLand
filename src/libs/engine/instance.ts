@@ -1,6 +1,6 @@
-import { Map } from "@/libs/map"
-import type { IMapGenerator } from "@/libs/map-generator"
-import { RobotEntity } from "@/libs/entities/robot"
+import { Map } from "@/libs/engine/map"
+import type { IMapGenerator } from "@/libs/engine/map-generator"
+import { RobotEntity } from "@/libs/engine/entities/robot"
 
 export type LoggerLevel = "debug" | "info" | "warning" | "error" | "fatal"
 
@@ -19,6 +19,17 @@ export class GameInstance {
       }
     })
     return robots
+  }
+
+  // Game still playable
+  get alive() {
+    let alive = false
+    for (const robot of Object.values(this.robots)) {
+      if (robot.power > 0 && robot.health > 0) {
+        alive = true
+      }
+    }
+    return alive
   }
 
   // Player inventory
@@ -51,8 +62,11 @@ export class GameInstance {
 
   start(): number {
     return setInterval(() => {
-      this.inGameTime++
-      this.doUpdate()
+      // If game isn't playable, skip next tick computing.
+      if (this.alive) {
+        this.inGameTime++
+        this.doUpdate()
+      }
     }, 100)
   }
 

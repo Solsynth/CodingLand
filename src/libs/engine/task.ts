@@ -1,4 +1,4 @@
-import type { GameInstance } from "@/libs/instance"
+import type { GameInstance } from "@/libs/engine/instance"
 
 export class Task {
   id = "undefined"

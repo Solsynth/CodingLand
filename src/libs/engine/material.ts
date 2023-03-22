@@ -1,5 +1,5 @@
-import { Temperature } from "@/libs/temperature"
-import { GameObject } from "@/libs/object"
+import { Temperature } from "@/libs/engine/temperature"
+import { GameObject } from "@/libs/engine/object"
 
 export type MaterialType = "gas" | "liquid" | "solid"
 

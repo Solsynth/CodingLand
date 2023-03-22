@@ -1,14 +1,14 @@
-import type { Coordinate } from "@/libs/map"
-import { MapTile } from "@/libs/map"
-import type { Entity } from "@/libs/entity"
-import { Temperature } from "@/libs/temperature"
-import { DirtMaterial } from "@/libs/materials/dirt"
-import { RobotEntity } from "@/libs/entities/robot"
-import { VacuumMaterial } from "@/libs/materials/vacuum"
-import { GameLoader } from "@/libs/loader"
-import { IronMaterial } from "@/libs/materials/iron"
-import { DiamondMaterial } from "@/libs/materials/diamond"
-import { CoalMaterial } from "@/libs/materials/coal"
+import type { Coordinate } from "@/libs/engine/map"
+import { MapTile } from "@/libs/engine/map"
+import type { Entity } from "@/libs/engine/entity"
+import { Temperature } from "@/libs/engine/temperature"
+import { DirtMaterial } from "@/libs/engine/materials/dirt"
+import { RobotEntity } from "@/libs/engine/entities/robot"
+import { VacuumMaterial } from "@/libs/engine/materials/vacuum"
+import { GameLoader } from "@/libs/engine/loader"
+import { IronMaterial } from "@/libs/engine/materials/iron"
+import { DiamondMaterial } from "@/libs/engine/materials/diamond"
+import { CoalMaterial } from "@/libs/engine/materials/coal"
 import chance from "chance"
 
 export interface IMapGenerator {
@@ -57,11 +57,8 @@ export class EarthMapGenerator implements IMapGenerator {
   placeRobot(amount: number) {
     const robots = []
     for (let i = 0; i < amount; i++) {
-      const robot = new RobotEntity(`Robot${i + 1}`)
-      const position: Coordinate = {
-        x: chance().integer({ min: 0, max: 20 }),
-        y: chance().integer({ min: 0, max: 20 })
-      }
+      const position: Coordinate = { x: chance().integer({ min: 0, max: 20 }), y: chance().integer({ min: 0, max: 20 }) }
+      const robot = new RobotEntity(`Robot${i + 1}`, position)
 
       this.tiles[position.x][position.y].material = new VacuumMaterial(0, new Temperature(0))
       this.tiles[position.x][position.y].entities.push(robot)

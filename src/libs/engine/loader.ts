@@ -1,16 +1,17 @@
-import { Map, MapTile } from "@/libs/map"
-import type { Entity } from "@/libs/entity"
-import type { Material } from "@/libs/material"
-import { GameInstance } from "@/libs/instance"
-import { Temperature } from "@/libs/temperature"
-import { entityModules } from "@/libs/entities"
-import { materialModules } from "@/libs/materials"
-import { taskModules } from "@/libs/tasks"
+import { Map, MapTile } from "@/libs/engine/map"
+import type { Entity } from "@/libs/engine/entity"
+import type { Material } from "@/libs/engine/material"
+import { GameInstance } from "@/libs/engine/instance"
+import { Temperature } from "@/libs/engine/temperature"
+import { entityModules } from "@/libs/engine/entities"
+import { materialModules } from "@/libs/engine/materials"
+import { taskModules } from "@/libs/engine/tasks"
 
 export class GameLoader {
   static entityModuleTree = GameLoader.modulesTreeBuilder("entities", ...entityModules)
   static materialModuleTree = GameLoader.modulesTreeBuilder("materials", ...materialModules)
   static taskModuleTree = GameLoader.modulesTreeBuilder("tasks", ...taskModules)
+
   static modulesTreeBuilder(namespace: string, ...modules: any[]) {
     const tree: { [id: string]: Material } = {}
     for (const module of modules) {
@@ -42,7 +43,9 @@ export class GameLoader {
   static fromJSON2MapTile(save: any): MapTile {
     const entities: Entity[] = []
     for (const entity of save.entities) {
-      entities.push(GameLoader.fromJSON2Entity(entity))
+      const item = GameLoader.fromJSON2Entity(entity)
+      item.position = save.position
+      entities.push(item)
     }
     save.entities = entities
     save.material = GameLoader.fromJSON2Material(save.material)
@@ -51,7 +54,7 @@ export class GameLoader {
 
   static fromJSON2Entity(save: any): Entity {
     const tasks = []
-    for(const task of save.tasks) {
+    for (const task of save.tasks) {
       tasks.push(GameLoader.fromJSON2Task(task))
     }
     save.tasks = tasks

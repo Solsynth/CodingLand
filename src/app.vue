@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn dense flat round icon="mdi-code-tags" @click="versions = !versions" />
 
-        <q-toolbar-title>{{ versions ? "Alpha v0.0.2" : "CodingLand" }}</q-toolbar-title>
+        <q-toolbar-title>{{ versions ? "Alpha v0.0.4" : "CodingLand" }}</q-toolbar-title>
         <q-space />
 
         <q-btn dense flat round icon="mdi-github" href="https://github.com/SmartSheep-Studio/CodingLand" target="_blank" />

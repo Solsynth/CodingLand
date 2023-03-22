@@ -1,18 +1,17 @@
-import { Material } from "@/libs/material"
-import type { Coordinate, Direction } from "@/libs/map"
-import { DirectionRelativePosition } from "@/libs/map"
-import { Temperature } from "@/libs/temperature"
-import type { GameInstance } from "@/libs/instance"
-import type { Task } from "@/libs/task"
-import { GameObject } from "@/libs/object"
-import { EntityDigTask, EntityMoveTask } from "@/libs/tasks/entity"
+import { Material } from "@/libs/engine/material"
+import type { Coordinate, Direction } from "@/libs/engine/map"
+import { DirectionRelativePosition } from "@/libs/engine/map"
+import { Temperature } from "@/libs/engine/temperature"
+import type { GameInstance } from "@/libs/engine/instance"
+import type { Task } from "@/libs/engine/task"
+import { GameObject } from "@/libs/engine/object"
+import { EntityDigTask, EntityMoveTask } from "@/libs/engine/tasks/entity"
+import { effect } from "vue"
 
 // Base class of entities
 export class Entity extends GameObject {
-  // Entity type id
   id = "undefined"
 
-  // Get entity prototype
   get prototype() {
     return Object.getPrototypeOf(this)
   }
@@ -22,26 +21,26 @@ export class Entity extends GameObject {
     color: "red"
   }
 
-  // Entity name
   name: string
 
-  // Entity facing
+  position: Coordinate
+
   facing: Direction = "north"
 
-  // Entity material
   material: Material = new Material(0, new Temperature(0))
 
-  // Entity health
-  health: number
+  health = 100
 
-  // Entity holding tasks
+  efficiency = {
+    dig: 100
+  }
+
   tasks: Task[] = []
-
-  // Entity can reach/go to area relative coordinates
   reachableZone: Coordinate[] = Object.values(DirectionRelativePosition)
 
-  constructor(name: string, health = 100) {
+  constructor(name: string, position: Coordinate, health = 100) {
     super()
+    this.position = position
     this.health = health
     this.name = name
   }
@@ -96,7 +95,7 @@ export class Entity extends GameObject {
     if (abs == null) {
       return false
     } else {
-      const task = new EntityDigTask(instance.map.tiles[abs.x][abs.y].material, abs)
+      const task = new EntityDigTask(this.efficiency.dig, instance.map.tiles[abs.x][abs.y].material, abs)
       task.callback = (task) => {
         this.store(instance, task.data.material)
       }

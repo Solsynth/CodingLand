@@ -166,8 +166,9 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
-import { RobotEntity } from "@/libs/entities/robot"
-import type { Coordinate } from "@/libs/map"
+import { RobotEntity } from "@/libs/engine/entities/robot"
+import type { Coordinate } from "@/libs/engine/map"
+import { MapTile } from "@/libs/engine/map"
 
 const $instance = useGameInstance().instance
 
@@ -195,7 +196,7 @@ function render() {
   sense.style.height = `${configuration.tile.size * $instance.map.size.y}px`
   sense.style.fontSize = `${0}px`
 
-  $instance.map.forEach((tile) => {
+  $instance.map.forEach((tile: MapTile) => {
     const tileElement = document.createElement("div")
     tileElement.id = `tiles-${tile.drawingId}`
     tileElement.style.backgroundColor = tile.material.prototype.constructor.style?.color
@@ -294,14 +295,7 @@ onMounted(() => {
 watch($instance, () => {
   render()
 
-  let alive = false
-  for (const robot of Object.values($instance.robots)) {
-    if (robot.power > 0 && robot.health > 0) {
-      alive = true
-    }
-  }
-
-  if (!alive) {
+  if (!$instance.alive) {
     modals.over = true
     if (pid.value !== -1) {
       pause()
