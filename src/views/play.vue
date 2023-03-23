@@ -154,7 +154,7 @@
     </q-splitter>
 
     <q-bar>
-      <div>GameEngine v0.0.4</div>
+      <div>GameEngine v0.1.5</div>
       <q-space />
       <q-btn flat dense icon="mdi-content-save" :disable="$engine.saved" @click="$engine.save()" />
       <q-btn flat dense icon="mdi-exit-to-app" @click="() => { $router.push({name: 'main-menu'}) }" />
