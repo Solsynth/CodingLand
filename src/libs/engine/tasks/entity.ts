@@ -84,7 +84,7 @@ export class EntityDigTask extends Task {
         this.destroyable = true
         // Add score into instance
         const material = instance.map.tiles[this.data.position.x][this.data.position.y].material
-        instance.score += material.mass * material.prototype.constructor.attributes.hardness
+        instance.score += material.mass * material.prototype.constructor.attributes.value
         // Clear tile material
         instance.map.tiles[this.data.position.x][this.data.position.y].material = new VacuumMaterial(0, new Temperature(0))
         this.callback != null && this.callback(this)

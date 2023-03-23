@@ -9,7 +9,8 @@ export class IronMaterial extends Material {
     standable: false,
     unbreakable: false,
     replaceable: false,
-    hardness: 50
+    hardness: 50,
+    value: 2,
   }
 
   static style = {

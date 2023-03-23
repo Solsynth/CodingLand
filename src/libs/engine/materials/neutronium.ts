@@ -10,6 +10,7 @@ export class NeutroniumMaterial extends Material {
     unbreakable: true,
     replaceable: false,
     hardness: 0,
+    value: 0,
   }
 
   static style = {

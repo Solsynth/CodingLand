@@ -49,14 +49,14 @@ export class Entity extends GameObject {
     instance.inventory[material.id] = (instance.inventory[material.id] ?? 0) + material.mass
   }
 
-  move(instance: GameInstance, start: Coordinate, facing: Direction, callback: (n: Coordinate) => void): boolean {
+  move(instance: GameInstance, facing: Direction): boolean {
     let abs: Coordinate | null = null
     const position = DirectionRelativePosition[facing]
 
     for (const coordinate of this.reachableZone) {
       // Check position is reachable, in the map and safe
       if (coordinate.x == position.x && coordinate.y == position.y) {
-        abs = { x: start.x + position.x, y: start.y + position.y }
+        abs = { x: this.position.x + position.x, y: this.position.y + position.y }
         if (!instance.map.inRange(abs)) {
           return false
         } else {
@@ -68,20 +68,19 @@ export class Entity extends GameObject {
     if (abs == null) {
       return false
     } else {
-      const task = new EntityMoveTask(this, start, abs, facing)
-      task.callback = () => callback(abs as Coordinate)
+      const task = new EntityMoveTask(this, this.position, abs, facing)
       this.tasks.push(task)
       return false
     }
   }
 
-  dig(instance: GameInstance, start: Coordinate): boolean {
+  dig(instance: GameInstance): boolean {
     let abs: Coordinate | null = null
     const position: Coordinate = DirectionRelativePosition[this.facing]
     for (const coordinate of this.reachableZone) {
       // Check position is reachable, in the map and breakable
       if (coordinate.x == position.x && coordinate.y == position.y) {
-        abs = { x: start.x + position.x, y: start.y + position.y }
+        abs = { x: this.position.x + position.x, y: this.position.y + position.y }
         if (!instance.map.inRange(abs)) {
           return false
         } else if (instance.map.tiles[abs.x][abs.y].material.prototype.constructor.attributes.unbreakable) {

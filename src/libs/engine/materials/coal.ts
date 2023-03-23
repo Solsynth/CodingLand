@@ -9,7 +9,8 @@ export class CoalMaterial extends Material {
     standable: false,
     unbreakable: false,
     replaceable: false,
-    hardness: 20
+    hardness: 20,
+    value: 2,
   }
 
   static style = {

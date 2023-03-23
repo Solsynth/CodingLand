@@ -81,11 +81,10 @@
                 <q-bar>Robots</q-bar>
                 <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.values($instance.robots)"
                                   separator v-slot="{ item, index }">
-                  <q-item :key="index">
+                  <q-item clickable v-ripple :key="index" :active="focus.robot?.name === item.name" @click="focus.robot = item">
                     <q-item-section>
                       <q-item-label>
-                        <span>{{ item.name }}</span>&nbsp;
-                        <span>{{ focus.robot?.name === item.name ? "√" : "" }}</span>
+                        <span>{{ item.name }}</span>
                       </q-item-label>
                       <q-item-label caption>
                         <span>Battery {{ item.power }}kJ</span>&nbsp;
@@ -166,7 +165,6 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
-import { RobotEntity } from "@/libs/engine/entities/robot"
 import type { Coordinate } from "@/libs/engine/map"
 import { MapTile } from "@/libs/engine/map"
 
@@ -176,25 +174,25 @@ const splitters = reactive([50, 50, 50])
 const modes = reactive({ slide1: "console" })
 
 const pid = ref(-1)
-const focus = reactive<any>({ element: null, layer: 0, position: null, robot: null })
+const focus = reactive<any>({ element: null, layer: 0, robot: null })
 const details = reactive<any>({ element: false, info: null })
 const modals = reactive({ over: false })
 const configuration = reactive({
   tile: { size: 20 }
 })
 
-let sense: HTMLDivElement
+let scene: HTMLDivElement
 
 function render() {
   // Clear old render result
-  while (sense?.firstChild) {
-    sense.removeChild(sense.firstChild)
+  while (scene?.firstChild) {
+    scene.removeChild(scene.firstChild)
   }
 
   // Set height and width
-  sense.style.width = `${configuration.tile.size * $instance.map.size.x}px`
-  sense.style.height = `${configuration.tile.size * $instance.map.size.y}px`
-  sense.style.fontSize = `${0}px`
+  scene.style.width = `${configuration.tile.size * $instance.map.size.x}px`
+  scene.style.height = `${configuration.tile.size * $instance.map.size.y}px`
+  scene.style.fontSize = `${0}px`
 
   $instance.map.forEach((tile: MapTile) => {
     const tileElement = document.createElement("div")
@@ -225,26 +223,7 @@ function render() {
       details.element = false
       details.info = null
     })
-    tileElement.addEventListener("click", () => {
-      focus.element = `#${tileElement.id}`
-      if (tile.entities.length > 0) {
-        if (focus.element !== `#${tileElement.id}`) {
-          focus.layer = 0
-        }
-        const robots = tile.entities.filter((v) => v instanceof RobotEntity)
-        if (robots.length > 0) {
-          focus.position = tile.position
-          focus.robot = robots[focus.layer]
-          focus.layer = robots.length <= focus.layer + 1 ? focus.layer : focus.layer + 1
-          $instance.messages.push({ level: "info", message: `You are controlling the robot ${focus.robot.name}` })
-        }
-      } else {
-        $instance.messages.push({ level: "info", message: `You no longer control the robot ${focus.robot.name}` })
-        focus.robot = null
-        focus.position = null
-      }
-    })
-    sense.append(tileElement)
+    scene.append(tileElement)
   })
 }
 
@@ -259,7 +238,7 @@ function pause() {
 
 onMounted(() => {
   // Setup rendering
-  sense = document.getElementById("scene") as HTMLDivElement
+  scene = document.getElementById("scene") as HTMLDivElement
 
   // First time render
   render()
@@ -273,19 +252,19 @@ onMounted(() => {
     if (focus.robot != null) {
       switch (event.key.toLowerCase()) {
         case "w":
-          focus.robot.move($instance, focus.position, "north", (n: Coordinate) => focus.position = n)
+          focus.robot.move($instance, "north")
           break
         case "a":
-          focus.robot.move($instance, focus.position, "west", (n: Coordinate) => focus.position = n)
+          focus.robot.move($instance, "west")
           break
         case "s":
-          focus.robot.move($instance, focus.position, "south", (n: Coordinate) => focus.position = n)
+          focus.robot.move($instance, "south")
           break
         case "d":
-          focus.robot.move($instance, focus.position, "east", (n: Coordinate) => focus.position = n)
+          focus.robot.move($instance, "east")
           break
         case " ":
-          focus.robot.dig($instance, focus.position)
+          focus.robot.dig($instance)
           break
       }
     }

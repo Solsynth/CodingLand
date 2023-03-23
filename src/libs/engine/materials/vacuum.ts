@@ -9,7 +9,8 @@ export class VacuumMaterial extends Material {
     standable: true,
     unbreakable: true,
     replaceable: true,
-    hardness: 0
+    hardness: 0,
+    value: 0,
   }
 
   static style = {

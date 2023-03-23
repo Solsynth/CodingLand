@@ -9,7 +9,8 @@ export class DiamondMaterial extends Material {
     standable: false,
     unbreakable: false,
     replaceable: false,
-    hardness: 200
+    hardness: 200,
+    value: 20,
   }
 
   static style = {

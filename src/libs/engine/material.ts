@@ -21,6 +21,7 @@ export class Material extends GameObject {
     unbreakable: true,
     replaceable: true,
     hardness: 200,
+    value: 0,
   }
 
   // Material display styles
