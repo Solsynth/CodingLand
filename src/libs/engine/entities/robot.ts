@@ -10,7 +10,7 @@ export class RobotEntity extends Entity {
   id = join(defaults.namespace, "entities", "robot")
 
   // Robot holding javascript
-  script = "function robot(context) {\t\n// Start coding here\n\n}\n\nrobot(this)"
+  script = "// Start coding here\n// Those code will execute every loop\n"
 
   // Robot battery power, every tick will decrease one. When the power is 0, robot cannot do anything.
   power = 1600

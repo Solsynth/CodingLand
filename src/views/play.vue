@@ -128,11 +128,20 @@
       <template v-slot:after>
         <q-bar>Editor</q-bar>
         <div v-if="focus.robot != null" style="height: calc(100% - 32px)">
-          <vue-monaco-editor
-            language="javascript"
-            v-model:value="focus.robot.script"
-            style="height: 100%"
-          />
+          <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+            <div v-show="pid === -1" style="height: 100%">
+              <vue-monaco-editor
+                language="javascript"
+                v-model:value="focus.robot.script"
+                style="height: 100%"
+              />
+            </div>
+          </transition>
+
+          <q-inner-loading :showing="pid !== -1">
+            <q-spinner-gears size="50px" color="primary" />
+            <span class="q-pt-md">You cannot edit code when game running.</span>
+          </q-inner-loading>
         </div>
         <div v-else style="height: calc(100% - 32px); display: flex; justify-content: center; align-items: center">
           <div class="text-center">

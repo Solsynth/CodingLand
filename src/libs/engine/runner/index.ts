@@ -26,6 +26,7 @@ class ScriptRunner {
   }
 
   static run(script: string) {
+    eval("console = this.console")
     return eval(script)
   }
 }
