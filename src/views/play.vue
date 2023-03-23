@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-splitter v-model="splitters[0]" style="height: calc(100vh - 50px); width: 100%">
+    <q-splitter v-model="splitters[0]" style="height: calc(100vh - 64px); width: 100%">
       <template v-slot:before>
         <q-splitter v-model="splitters[1]" horizontal>
           <template v-slot:before>
@@ -127,8 +127,29 @@
       </template>
       <template v-slot:after>
         <q-bar>Editor</q-bar>
+        <div v-if="focus.robot != null" style="height: calc(100% - 32px)">
+          <vue-monaco-editor
+            language="javascript"
+            v-model:value="focus.robot.script"
+            style="height: 100%"
+          />
+        </div>
+        <div v-else style="height: calc(100% - 32px); display: flex; justify-content: center; align-items: center">
+          <div class="text-center">
+            <q-icon name="mdi-alert" color="negative" size="56px" />
+            <br>
+            <span>Select a robot to edit its script</span>
+          </div>
+        </div>
       </template>
     </q-splitter>
+
+    <q-bar>
+      <div>GameEngine v0.0.4</div>
+      <q-space />
+      <q-btn flat dense icon="mdi-content-save" :disable="$engine.saved" @click="$engine.save()" />
+      <q-btn flat dense icon="mdi-exit-to-app" @click="() => { $router.push({name: 'main-menu'}) }" />
+    </q-bar>
 
     <q-dialog v-model="modals.over" persistent>
       <q-card class="q-pa-md">
@@ -168,6 +189,7 @@ import { useGameInstance } from "@/stores/instance"
 import type { Coordinate } from "@/libs/engine/map"
 import { MapTile } from "@/libs/engine/map"
 
+const $engine = useGameInstance()
 const $instance = useGameInstance().instance
 
 const splitters = reactive([50, 50, 50])

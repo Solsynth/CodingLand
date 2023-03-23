@@ -1,10 +1,9 @@
 import { defineStore } from "pinia"
-import { reactive, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 import { useLocalStorage } from "@vueuse/core"
 import { GameInstance } from "@/libs/engine/instance"
 import { GameLoader } from "@/libs/engine/loader"
-
-const debug = console.log
+import { useQuasar } from "quasar"
 
 export const useGameInstance = defineStore("play-instance", () => {
   const store = useLocalStorage<GameInstance>("world-save", new GameInstance(), {
@@ -25,10 +24,18 @@ export const useGameInstance = defineStore("play-instance", () => {
   })
 
   const instance = reactive<GameInstance>(store.value ? GameLoader.fromJSON2Instance(store.value) : new GameInstance())
+  const saved = ref(true)
 
-  watch(instance, (v) => {
-    store.value = v
-  }, { deep: true, immediate: true })
+  const $q = useQuasar()
 
-  return { instance }
+  function save() {
+    store.value = instance
+    saved.value = true
+
+    $q.notify({ message: "Game saved.", type: "positive" })
+  }
+
+  watch(instance, () => saved.value = false, { deep: true })
+
+  return { instance, saved, save }
 })

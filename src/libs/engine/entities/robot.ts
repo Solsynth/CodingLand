@@ -4,12 +4,13 @@ import { NeutroniumMaterial } from "@/libs/engine/materials/neutronium"
 import { Temperature } from "@/libs/engine/temperature"
 import type { GameInstance } from "@/libs/engine/instance"
 import type { Material } from "@/libs/engine/material"
+import { ScriptRunner } from "@/libs/engine/runner"
 
 export class RobotEntity extends Entity {
   id = join(defaults.namespace, "entities", "robot")
 
   // Robot holding javascript
-  script = "// Start your coding here."
+  script = "function robot(context) {\t\n// Start coding here\n\n}\n\nrobot(this)"
 
   // Robot battery power, every tick will decrease one. When the power is 0, robot cannot do anything.
   power = 1600
@@ -26,8 +27,13 @@ export class RobotEntity extends Entity {
 
   whenUpdate(instance: GameInstance) {
     super.whenUpdate(instance)
+
     if (this.power > 0) {
-      this.power -= 1 // Use 1Wh battery power every tick(100 millisecond)
+      // Use 1Wh battery power every tick(100 millisecond)
+      this.power -= 1
+
+      // Call user script
+      console.log(ScriptRunner.runAsRobot(instance, this, this.script))
     }
   }
 
