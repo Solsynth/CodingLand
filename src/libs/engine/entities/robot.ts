@@ -33,7 +33,7 @@ export class RobotEntity extends Entity {
       this.power -= 1
 
       // Call user script
-      console.log(ScriptRunner.runAsRobot(instance, this, this.script))
+      return ScriptRunner.runAsRobot(instance, this, this.script)
     }
   }
 
