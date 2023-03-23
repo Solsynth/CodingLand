@@ -264,33 +264,6 @@ onMounted(() => {
 
   // First time render
   render()
-
-  // Keyboard listener
-  document.addEventListener("keydown", (event) => {
-    if (pid.value == -1) {
-      return
-    }
-    // Keyboard control robot events
-    if (focus.robot != null) {
-      switch (event.key.toLowerCase()) {
-        case "w":
-          focus.robot.move($instance, "north")
-          break
-        case "a":
-          focus.robot.move($instance, "west")
-          break
-        case "s":
-          focus.robot.move($instance, "south")
-          break
-        case "d":
-          focus.robot.move($instance, "east")
-          break
-        case " ":
-          focus.robot.dig($instance)
-          break
-      }
-    }
-  })
 })
 
 watch($instance, () => {
