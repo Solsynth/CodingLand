@@ -6,6 +6,7 @@
     "src/**/*.vue"
   ],
   "compilerOptions": {
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "lib": [
       "dom",

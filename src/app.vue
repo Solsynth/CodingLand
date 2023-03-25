@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-header bordered>
+    <q-header>
       <q-bar dark class="bg-primary text-white">
         <q-btn dense flat icon="mdi-code-braces-box">
           <q-menu>
@@ -37,7 +37,7 @@
 
         <q-space />
 
-        <div>{{ date }}</div>
+        <div>{{ date.toLocaleTimeString() }}</div>
       </q-bar>
     </q-header>
 
@@ -55,8 +55,10 @@
 
 <script lang="ts" setup>
 import { useLayoutOptions } from "@/stores/layouts"
-import { computed } from "vue"
+import { ref } from "vue"
 
 const layouts = useLayoutOptions().options
-const date = computed(() => new Date().toLocaleTimeString())
+const date = ref(new Date())
+
+setInterval(() => date.value = new Date(), 1000)
 </script>

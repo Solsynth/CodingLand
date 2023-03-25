@@ -154,7 +154,7 @@
     </q-splitter>
 
     <q-bar>
-      <div>GameEngine v0.1.5</div>
+      <div>GameEngine v1.1.5</div>
       <q-space />
       <q-btn flat dense icon="mdi-content-save" :disable="$engine.saved" @click="$engine.save()" />
       <q-btn flat dense icon="mdi-exit-to-app" @click="() => { $router.push({name: 'main-menu'}) }" />
@@ -195,8 +195,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
-import type { Coordinate } from "@/libs/engine/map"
-import { MapTile } from "@/libs/engine/map"
+import type { MapTile } from "@/libs/engine/map"
 
 const $engine = useGameInstance()
 const $instance = useGameInstance().instance

@@ -5,8 +5,8 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "main-menu",
-      component: () => import("@/views/main-menu.vue")
+      name: "launch",
+      component: () => import("@/views/launch.vue")
     },
     {
       path: "/play",
