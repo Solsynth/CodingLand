@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 import { useSessionStorage } from "@vueuse/core"
 import { useCookies } from "@vueuse/integrations/useCookies"
 import { http } from "@/utils/http"
+import { ref } from "vue"
 
 export interface IUserIdentity {
   id: number;
@@ -59,12 +60,14 @@ const serializer = {
 
 export const useAccountData = defineStore("account", () => {
   const cookies = useCookies(["authorization"])
+  const isLoggedIn = ref(false)
   const identity = useSessionStorage<IUserIdentity | null>("user-data", null, { deep: true, serializer })
   const account = useSessionStorage<IUserAccount | null>("user-data", null, { deep: true, serializer })
 
   async function fetch() {
     if (cookies.get("authorization") != null) {
       const res = await http.get("/api/users")
+      isLoggedIn.value = true
       identity.value = res.data.identity
       account.value = res.data.account
     }
@@ -76,5 +79,5 @@ export const useAccountData = defineStore("account", () => {
     cookies.remove("authorization")
   }
 
-  return { account, fetch, logout }
+  return { account, identity, isLoggedIn, fetch, logout }
 })
