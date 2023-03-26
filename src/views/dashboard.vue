@@ -1,38 +1,48 @@
 <template>
   <q-page padding>
-    <div class="indicator">
+    <div class="text-h6 text-center">Operation Terminal</div>
+    <div class="indicator fit row no-wrap justify-center q-col-gutter-md q-py-md">
       <!-- TODO Replace indicator data with Goatworks -->
-      <q-card flat bordered class="cursor-pointer" @click="modals.changelogs = true">
-        <q-card-section>
-          <div class="text-h6">Changelogs</div>
-          <div class="text-subtitle2">
-            Notification
-            <q-icon name="mdi-bell-badge" />
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card flat bordered class="cursor-pointer" @click="modals.tutorial = true">
-        <q-card-section>
-          <div class="text-h6">Getting Start</div>
-          <div class="text-subtitle2">
-            Tutorial
-            <q-icon name="mdi-school" />
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card flat bordered class="cursor-pointer" @click="modals.inventory = true">
-        <q-card-section>
-          <div class="text-h6">Inventory</div>
-          <div class="text-subtitle2">
-            Resources
-            <q-icon name="mdi-package" />
-          </div>
-        </q-card-section>
-      </q-card>
+      <div class="col-3">
+        <q-card flat bordered class="cursor-pointer" @click="modals.changelogs = true">
+          <q-card-section>
+            <div class="text-h6">Changelogs</div>
+            <div class="text-subtitle2">
+              Notification
+              <q-icon name="mdi-bell-badge" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-3">
+        <q-card flat bordered class="cursor-pointer" @click="modals.tutorial = true">
+          <q-card-section>
+            <div class="text-h6">Getting Start</div>
+            <div class="text-subtitle2">
+              Tutorial
+              <q-icon name="mdi-school" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-3">
+        <q-card flat bordered class="cursor-pointer" @click="modals.inventory = true">
+          <q-card-section>
+            <div class="text-h6">Inventory</div>
+            <div class="text-subtitle2">
+              Resources
+              <q-icon name="mdi-package" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
 
-    <div class="fit row q-col-gutter-x-md q-mt-md">
-      <div class="col-6 offset-3">
+    <div class="fit row q-col-gutter-x-md">
+      <div class="col-3">
+        <basement />
+      </div>
+      <div class="col-6">
         <actions />
       </div>
     </div>
@@ -56,6 +66,7 @@ import { reactive } from "vue"
 import Actions from "@/views/operations/actions.vue"
 import Changelogs from "@/views/statistics/changelogs.vue"
 import Tutorial from "@/views/statistics/tutorial.vue"
+import Basement from "@/views/basement/overview.vue"
 import Inventory from "@/views/statistics/inventory.vue"
 
 const modals = reactive({ changelogs: false, tutorial: false, inventory: false })
@@ -66,17 +77,8 @@ const modals = reactive({ changelogs: false, tutorial: false, inventory: false }
   padding: 0.5em;
 }
 
-.indicator {
-  display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
-  width: 100%;
-  gap: 1em;
-}
-
 .indicator .q-card {
-  width: calc(100% / 5);
-  min-width: 280px;
+  width: 100%;
   transition: all 300ms linear;
 }
 
