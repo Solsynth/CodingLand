@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="text-h5">展开战役</div>
-    <div class="text-subtitle1">展开战役收集材料、资料与其他资源。</div>
-    <div>您将控制 1 名机器人前往一个前人类文明的遗迹探索以获取资源。</div>
+    <div class="text-h5">Start A Campaign</div>
+    <div class="text-subtitle1">Start a campaign to collect materials, data, and other resources. </div>
+    <div>You will control a robot to explore the ruins of a pre-human civilization to obtain resources. </div>
     <div class="q-pt-md q-gutter-sm">
       <q-btn flat color="white" @click="$instance.newGame()">
-        确认
-        <q-tooltip>这是一条没法回头的道路</q-tooltip>
+        Confirm
+        <q-tooltip>This is a road of no return</q-tooltip>
       </q-btn>
     </div>
   </div>

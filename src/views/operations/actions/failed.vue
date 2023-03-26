@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="text-h5">战役失败</div>
-    <div class="text-subtitle1">所有机器人均已失去链接</div>
-    <div>机器人虽然没有生命，但是它们也有感情的。#RobotLifeMatter #RLM</div>
+    <div class="text-h5">Battle Failed</div>
+    <div class="text-subtitle1">All robots have lost links</div>
+    <div>Although robots are not alive, they also have emotions. #RobotLifeMatter #RLM</div>
     <div class="q-gutter-sm q-pt-lg">
       <q-btn flat color="white" @click="$instance.resetGame()">
-        重新开始
-        <q-tooltip>快跑啊！指挥官又要去霍霍更多机器人啦！</q-tooltip>
+        Restart
+        <q-tooltip>Run! Commander is going to Huo Huo more robots again! </q-tooltip>
       </q-btn>
     </div>
   </div>

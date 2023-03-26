@@ -69,13 +69,16 @@ export class GameInstance {
     randomGenerator != null && this.newGame(randomGenerator)
   }
 
-  resetGame() {
+  resetGame(redirect = true) {
     this.score = 0
     this.difficulty = 0
-    this.state = "pending"
     this.inventory = {}
     this.messages = []
     this.map = new Map([], { x: 20, y: 20 })
+
+    if (redirect) {
+      this.state = "pending"
+    }
   }
 
   newGame(randomGenerator: IMapGenerator = new EarthMapGenerator()) {
