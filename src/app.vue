@@ -6,6 +6,18 @@
           <q-menu>
             <q-list dense style="min-width: 100px">
               <q-item dense clickable>
+                <q-item-section>Account</q-item-section>
+                <q-item-section side>
+                  <q-icon name="mdi-chevron-right" />
+                </q-item-section>
+
+                <q-menu anchor="top end" self="top start">
+                  <q-item dense clickable v-close-popup :disable="!$account.isLoggedIn" @click="logout">
+                    <q-item-section>Logout</q-item-section>
+                  </q-item>
+                </q-menu>
+              </q-item>
+              <q-item dense clickable>
                 <q-item-section>Gameplay</q-item-section>
                 <q-item-section side>
                   <q-icon name="mdi-chevron-right" />
@@ -52,7 +64,11 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>
@@ -60,11 +76,32 @@
 <script lang="ts" setup>
 import { useLayoutOptions } from "@/stores/layouts"
 import { useGameInstance } from "@/stores/instance"
+import { useAccountData } from "@/stores/account"
+import { useRouter } from "vue-router"
 import { ref } from "vue"
 
+const $router = useRouter()
+const $account = useAccountData()
 const $instance = useGameInstance().instance
+
 const layouts = useLayoutOptions().options
 const date = ref(new Date())
 
 setInterval(() => date.value = new Date(), 1000)
+
+function logout() {
+  $account.logout()
+  $router.push({ name: "launch" }).then(() => $router.go(0))
+}
 </script>
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+</style>

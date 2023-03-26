@@ -70,6 +70,8 @@ export const useAccountData = defineStore("account", () => {
       isLoggedIn.value = true
       identity.value = res.data.identity
       account.value = res.data.account
+    } else {
+      isLoggedIn.value = false
     }
   }
 

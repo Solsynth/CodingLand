@@ -20,7 +20,7 @@
             <q-btn round flat :loading="submitting" type="submit" color="primary" icon="mdi-fingerprint" />
           </q-form>
           <div v-else>
-            <q-btn round flat color="primary" icon="mdi-login" :to="{name: 'dashboard'}" />
+            <q-btn round flat color="primary" icon="mdi-login" :to="{ name: 'dashboard' }" />
           </div>
         </div>
       </div>
@@ -46,8 +46,10 @@ import { http } from "@/utils/http"
 import { useQuasar } from "quasar"
 import { useAccountData } from "@/stores/account"
 import { useCookies } from "@vueuse/integrations/useCookies"
+import { useRouter } from "vue-router"
 
 const $q = useQuasar()
+const $router = useRouter()
 
 const reverting = ref(true)
 
@@ -58,6 +60,10 @@ const payload = reactive({
   username: "",
   password: ""
 })
+
+const sounds = {
+  welcome: new Audio("/src/assets/sounds/welcome.mp3")
+}
 
 async function submit() {
   if (payload.username.length <= 0 || payload.password.length <= 0) {
@@ -79,6 +85,7 @@ async function submit() {
     cookies.set("authorization", res.data["access_token"])
     await account.fetch()
 
+    await sounds.welcome.play()
     $q.notify({ message: `Welcome back, Commander ${res.data.identity.nickname}!`, type: "positive" })
   } catch (e: any) {
     submitting.value = false

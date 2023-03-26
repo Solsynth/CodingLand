@@ -18,6 +18,15 @@
 
 <script lang="ts" setup>
 import { useGameInstance } from "@/stores/instance"
+import { onMounted } from "vue"
 
 const $instance = useGameInstance().instance
+
+const sounds = {
+  accomplished: new Audio("/src/assets/sounds/operation-accomplished.mp3")
+}
+
+onMounted(() => {
+  sounds.accomplished.play()
+})
 </script>

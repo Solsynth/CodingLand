@@ -182,6 +182,10 @@ const configuration = reactive({
   tile: { size: 20 }
 })
 
+const sounds = {
+  started: new Audio("/src/assets/sounds/operation-started.mp3")
+}
+
 let scene: HTMLDivElement
 
 function render() {
@@ -238,6 +242,9 @@ function pause() {
 }
 
 onMounted(() => {
+  // Play sound
+  sounds.started.play()
+
   // Setup rendering
   scene = document.getElementById("scene") as HTMLDivElement
 
