@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="indicator">
       <!-- TODO Replace indicator data with Goatworks -->
-      <q-card flat bordered>
+      <q-card flat bordered class="cursor-pointer" @click="modals.changelogs = true">
         <q-card-section>
           <div class="text-h6">Changelogs</div>
           <div class="text-subtitle2">
@@ -11,7 +11,7 @@
           </div>
         </q-card-section>
       </q-card>
-      <q-card flat bordered>
+      <q-card flat bordered class="cursor-pointer" @click="modals.tutorial = true">
         <q-card-section>
           <div class="text-h6">Getting Start</div>
           <div class="text-subtitle2">
@@ -20,11 +20,11 @@
           </div>
         </q-card-section>
       </q-card>
-      <q-card flat bordered>
+      <q-card flat bordered class="cursor-pointer" @click="modals.inventory = true">
         <q-card-section>
           <div class="text-h6">Inventory</div>
           <div class="text-subtitle2">
-            Stock
+            Resources
             <q-icon name="mdi-package" />
           </div>
         </q-card-section>
@@ -36,11 +36,29 @@
         <actions />
       </div>
     </div>
+
+    <q-dialog v-model="modals.changelogs">
+      <changelogs />
+    </q-dialog>
+
+    <q-dialog v-model="modals.tutorial">
+      <tutorial />
+    </q-dialog>
+
+    <q-dialog v-model="modals.inventory">
+      <inventory />
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
+import { reactive } from "vue"
 import Actions from "@/views/operations/actions.vue"
+import Changelogs from "@/views/statistics/changelogs.vue"
+import Tutorial from "@/views/statistics/tutorial.vue"
+import Inventory from "@/views/statistics/inventory.vue"
+
+const modals = reactive({ changelogs: false, tutorial: false, inventory: false })
 </script>
 
 <style scoped>

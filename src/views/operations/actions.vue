@@ -44,7 +44,7 @@ watch($instance, (v) => {
   position: absolute;
   bottom: 20px;
   left: 100px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: monospace;
   -webkit-text-stroke: 1pt #fff;
 }
 </style>

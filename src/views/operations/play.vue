@@ -97,15 +97,7 @@
 
               <q-tab-panel class="q-pa-none" name="inventory">
                 <q-bar>Inventory</q-bar>
-                <q-virtual-scroll style="max-height: calc(100% - 36px)" :items="Object.entries($instance.inventory)"
-                                  separator v-slot="{ item, index }">
-                  <q-item :key="index">
-                    <q-item-section>
-                      <q-item-label>{{ item[0] }}</q-item-label>
-                      <q-item-label caption>{{ item[1] }}kg</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-virtual-scroll>
+                <materials-list class="q-pa-md" />
               </q-tab-panel>
             </q-tab-panels>
 
@@ -173,6 +165,7 @@ import type { MapTile } from "@/libs/engine/map"
 import { useRouter } from "vue-router"
 import Finished from "@/views/operations/feedbacks/finished.vue"
 import Failed from "@/views/operations/feedbacks/failed.vue"
+import MaterialsList from "@/components/materials-list.vue"
 
 const $router = useRouter()
 const $engine = useGameInstance()
