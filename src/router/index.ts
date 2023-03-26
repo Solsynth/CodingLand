@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
+import { useAccountData } from "@/stores/account"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,11 +15,20 @@ const router = createRouter({
       component: () => import("@/views/dashboard.vue")
     },
     {
-      path: "/play",
-      name: "play",
-      component: () => import("@/views/play.vue")
+      path: "/operations/play",
+      name: "operations.play",
+      component: () => import("@/views/operations/play.vue")
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const { isLoggedIn } = useAccountData()
+  if (!isLoggedIn && to.name !== "launch") {
+    next({ name: "launch" })
+  } else {
+    next()
+  }
 })
 
 export default router

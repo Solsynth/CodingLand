@@ -60,9 +60,9 @@ const serializer = {
 
 export const useAccountData = defineStore("account", () => {
   const cookies = useCookies(["authorization"])
-  const isLoggedIn = ref(false)
   const identity = useSessionStorage<IUserIdentity | null>("user-data", null, { deep: true, serializer })
   const account = useSessionStorage<IUserAccount | null>("user-data", null, { deep: true, serializer })
+  const isLoggedIn = ref(account ? true : false)
 
   async function fetch() {
     if (cookies.get("authorization") != null) {

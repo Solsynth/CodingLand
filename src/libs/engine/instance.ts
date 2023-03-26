@@ -1,8 +1,10 @@
 import { Map } from "@/libs/engine/map"
 import type { IMapGenerator } from "@/libs/engine/map-generator"
 import { RobotEntity } from "@/libs/engine/entities/robot"
+import { EarthMapGenerator } from "@/libs/engine/map-generator"
 
 export type LoggerLevel = "debug" | "info" | "warning" | "error" | "fatal"
+export type GameState = "pending" | "playing" | "choosing" | "finished"
 
 export class GameInstance {
   // Game map
@@ -44,12 +46,27 @@ export class GameInstance {
   // Game final score
   score = 0
 
+  // Game state
+  state: GameState = "pending"
+
+  // Game difficulty
+  difficulty = 0
+
   constructor(randomGenerator?: IMapGenerator) {
     this.map = new Map([], { x: 20, y: 20 })
     randomGenerator != null && this.newGame(randomGenerator)
   }
 
-  newGame(randomGenerator: IMapGenerator) {
+  resetGame() {
+    this.score = 0
+    this.difficulty = 0
+    this.state = "pending"
+    this.inventory = {}
+    this.messages = []
+    this.map = new Map([], { x: 20, y: 20 })
+  }
+
+  newGame(randomGenerator: IMapGenerator = new EarthMapGenerator()) {
     randomGenerator.generate(this.map.size.x, this.map.size.y)
     randomGenerator.placeRobot(1).forEach((v) => {
       if (v instanceof RobotEntity) {
@@ -57,13 +74,15 @@ export class GameInstance {
       }
     })
 
+    this.difficulty++
     this.map.tiles = randomGenerator.tiles
+    this.state = "playing"
   }
 
   start(): number {
     return setInterval(() => {
       // If game isn't playable, skip next tick computing.
-      if (this.alive) {
+      if (this.alive && this.state === "playing") {
         this.inGameTime++
         this.doUpdate()
       }

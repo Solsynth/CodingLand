@@ -1,6 +1,6 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
-import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor'
+import { install as VueMonacoEditorPlugin } from "@guolao/vue-monaco-editor"
 
 import App from "@/app.vue"
 import router from "@/router"
@@ -18,6 +18,7 @@ app.use(createPinia())
 app.use(router)
 app.use(Quasar, {
   plugins: { Notify, Loading, LoadingBar, Dialog },
+  config: { loadingBar: { position: "bottom", color: "primary" } },
   iconSet: quasarIconSet
 })
 

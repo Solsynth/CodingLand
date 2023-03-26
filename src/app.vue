@@ -5,13 +5,17 @@
         <q-btn dense flat icon="mdi-code-braces-box">
           <q-menu>
             <q-list dense style="min-width: 100px">
-              <q-item dense clickable :disable="$route.name !== 'play'">
+              <q-item dense clickable>
                 <q-item-section>Gameplay</q-item-section>
                 <q-item-section side>
                   <q-icon name="mdi-chevron-right" />
                 </q-item-section>
 
-                <q-menu anchor="top end" self="top start" v-if="$route.name === 'play'">
+                <q-menu anchor="top end" self="top start">
+                  <q-item dense clickable v-close-popup @click="$instance.resetGame()">
+                    <q-item-section>Reset</q-item-section>
+                  </q-item>
+                  <q-separator />
                   <q-item dense clickable v-close-popup>
                     <q-item-section>Settings</q-item-section>
                   </q-item>
@@ -55,8 +59,10 @@
 
 <script lang="ts" setup>
 import { useLayoutOptions } from "@/stores/layouts"
+import { useGameInstance } from "@/stores/instance"
 import { ref } from "vue"
 
+const $instance = useGameInstance().instance
 const layouts = useLayoutOptions().options
 const date = ref(new Date())
 

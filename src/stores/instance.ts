@@ -5,7 +5,7 @@ import { GameInstance } from "@/libs/engine/instance"
 import { GameLoader } from "@/libs/engine/loader"
 import { useQuasar } from "quasar"
 
-export const useGameInstance = defineStore("play-instance", () => {
+export const useGameInstance = defineStore("game-instance", () => {
   const store = useLocalStorage<GameInstance>("world-save", new GameInstance(), {
     serializer: {
       read(v) {

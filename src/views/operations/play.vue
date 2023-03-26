@@ -159,36 +159,6 @@
       <q-btn flat dense icon="mdi-content-save" :disable="$engine.saved" @click="$engine.save()" />
       <q-btn flat dense icon="mdi-exit-to-app" @click="() => { $router.push({name: 'main-menu'}) }" />
     </q-bar>
-
-    <q-dialog v-model="modals.over" persistent>
-      <q-card class="q-pa-md">
-        <q-card-section>
-          <div class="text-h6">Game Over</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <div>All robots are either dead or wounded. Game over.</div>
-          <div>In this time, you dug those materials:</div>
-          <ol>
-            <li v-for="(item, i) in Object.entries($instance.inventory)" :key="i">
-              {{ item[0] }} {{ item[1] }}kg
-            </li>
-          </ol>
-        </q-card-section>
-        <q-card-section class="q-pt-none">
-          <div>Based on the value of each material, your final score is</div>
-          <div class="text-h4">{{ $instance.score }}</div>
-        </q-card-section>
-        <q-card-section class="q-pt-none">
-          <div>Good job bro! Keep it up next time!</div>
-          <div>Share your score to your friend.</div>
-        </q-card-section>
-
-        <q-card-actions align="center">
-          <q-btn flat label="Main Menu" color="primary" style="width: 100%" :to="{name: 'main-menu'}" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -196,7 +166,9 @@
 import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
 import type { MapTile } from "@/libs/engine/map"
+import { useRouter } from "vue-router"
 
+const $router = useRouter()
 const $engine = useGameInstance()
 const $instance = useGameInstance().instance
 
@@ -206,7 +178,7 @@ const modes = reactive({ slide1: "console" })
 const pid = ref(-1)
 const focus = reactive<any>({ element: null, layer: 0, robot: null })
 const details = reactive<any>({ element: false, info: null })
-const modals = reactive({ over: false })
+const modals = reactive({ finished: false })
 const configuration = reactive({
   tile: { size: 20 }
 })
@@ -277,8 +249,12 @@ onMounted(() => {
 watch($instance, () => {
   render()
 
+  if ($instance.state !== "playing") {
+    $router.push({ name: "dashboard" })
+  }
+
   if (!$instance.alive) {
-    modals.over = true
+    modals.finished = true
     if (pid.value !== -1) {
       pause()
     }
