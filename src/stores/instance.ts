@@ -4,6 +4,7 @@ import { useLocalStorage } from "@vueuse/core"
 import { GameInstance } from "@/libs/engine/instance"
 import { GameLoader } from "@/libs/engine/loader"
 import { useQuasar } from "quasar"
+import { useRoute } from "vue-router"
 
 export const useGameInstance = defineStore("game-instance", () => {
   const store = useLocalStorage<GameInstance>("world-save", new GameInstance(), {
@@ -26,6 +27,7 @@ export const useGameInstance = defineStore("game-instance", () => {
   const instance = reactive<GameInstance>(store.value ? GameLoader.fromJSON2Instance(store.value) : new GameInstance())
   const saved = ref(true)
 
+  const $route = useRoute()
   const $q = useQuasar()
 
   function save() {
@@ -35,7 +37,13 @@ export const useGameInstance = defineStore("game-instance", () => {
     $q.notify({ message: "Game saved.", type: "positive" })
   }
 
-  watch(instance, () => saved.value = false, { deep: true })
+  watch(instance, () => {
+    if($route.name === 'operations.play') {
+      saved.value = false
+    } else {
+      store.value = instance
+    }
+  }, { deep: true })
 
   return { instance, saved, save }
 })

@@ -34,6 +34,18 @@ export class GameInstance {
     return alive
   }
 
+  // Game can go to next round
+  get finished() {
+    let finished = true
+    for (const robot of Object.values(this.robots)) {
+      if (robot.power > 0 && robot.health > 0 && !robot.poweredOff) {
+        finished = false
+        break
+      }
+    }
+    return finished
+  }
+
   // Player inventory
   inventory: { [id: string]: number } = {}
 

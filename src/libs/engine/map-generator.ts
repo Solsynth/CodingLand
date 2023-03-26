@@ -57,7 +57,7 @@ export class EarthMapGenerator implements IMapGenerator {
   placeRobot(amount: number) {
     const robots = []
     for (let i = 0; i < amount; i++) {
-      const position: Coordinate = { x: chance().integer({ min: 0, max: 20 }), y: chance().integer({ min: 0, max: 20 }) }
+      const position: Coordinate = { x: chance().integer({ min: 0, max: 19 }), y: chance().integer({ min: 0, max: 19 }) }
       const robot = new RobotEntity(`Robot${i + 1}`, position)
 
       this.tiles[position.x][position.y].material = new VacuumMaterial(0, new Temperature(0))

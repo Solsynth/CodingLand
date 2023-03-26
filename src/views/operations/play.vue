@@ -157,8 +157,12 @@
       <div>GameEngine v1.1.5</div>
       <q-space />
       <q-btn flat dense icon="mdi-content-save" :disable="$engine.saved" @click="$engine.save()" />
-      <q-btn flat dense icon="mdi-exit-to-app" @click="() => { $router.push({name: 'main-menu'}) }" />
     </q-bar>
+
+    <q-dialog v-model="modals.finished" persistent>
+      <finished v-if="$instance.alive" />
+      <failed v-else />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -167,6 +171,8 @@ import { onMounted, reactive, ref, watch } from "vue"
 import { useGameInstance } from "@/stores/instance"
 import type { MapTile } from "@/libs/engine/map"
 import { useRouter } from "vue-router"
+import Finished from "@/views/operations/feedbacks/finished.vue"
+import Failed from "@/views/operations/feedbacks/failed.vue"
 
 const $router = useRouter()
 const $engine = useGameInstance()
@@ -253,7 +259,7 @@ watch($instance, () => {
     $router.push({ name: "dashboard" })
   }
 
-  if (!$instance.alive) {
+  if (!$instance.alive || $instance.finished) {
     modals.finished = true
     if (pid.value !== -1) {
       pause()

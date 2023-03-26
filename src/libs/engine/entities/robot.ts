@@ -15,11 +15,19 @@ export class RobotEntity extends Entity {
   // Robot battery power, every tick will decrease one. When the power is 0, robot cannot do anything.
   power = 1600
 
+  // Robot power state, when robot powered off, it cannot perform any tasks and will not count as death
+  poweredOff = false
+
   static style = {
     color: "#f7d000"
   }
 
   material = new NeutroniumMaterial(200, new Temperature(293.15))
+
+  powerOff() {
+    this.poweredOff = true
+    this.tasks = []
+  }
 
   calculateDiggingEst(material: Material, remain: number) {
     return remain / (this.efficiency.dig / material.prototype.constructor.attributes.hardness)
@@ -28,9 +36,15 @@ export class RobotEntity extends Entity {
   whenUpdate(instance: GameInstance) {
     super.whenUpdate(instance)
 
-    if (this.power > 0) {
-      // Use 1Wh battery power every tick(100 millisecond)
-      this.power -= 1
+    if (this.power > 0 && !this.poweredOff) {
+      // Disallow player access difficulty level more than 9
+      if (instance.difficulty > 9) {
+        instance.messages.push({ level: "warning", message: `The dive depth is too high, the air pressure is too high, and the shell of the robot ${this.name} has been crushed.` })
+        this.health -= 100
+      }
+
+      // Use battery power every tick(100 millisecond)
+      this.power -= Math.round(1.2 * instance.difficulty)
 
       // Call user script
       return ScriptRunner.runAsRobot(instance, this, this.script)
@@ -38,7 +52,7 @@ export class RobotEntity extends Entity {
   }
 
   beforeExecuteTask(instance: GameInstance, task: unknown): boolean {
-    if (this.power <= 0) {
+    if (this.power <= 0 || this.poweredOff) {
       instance.messages.push({
         level: "warning",
         message: `Robot ${this.name} has run out of battery and cannot perform tasks`

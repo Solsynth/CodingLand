@@ -27,6 +27,7 @@ import Failed from "@/views/operations/actions/failed.vue"
 import { useGameInstance } from "@/stores/instance"
 import { watch } from "vue"
 import { useRouter } from "vue-router"
+import { useGlobalData } from "@/stores/global"
 
 const $router = useRouter()
 const $instance = useGameInstance().instance
