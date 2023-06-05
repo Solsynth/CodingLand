@@ -2,8 +2,9 @@ import { StageObject, Vector } from "../object"
 import { MapChunk } from "./chunk"
 
 export class Map extends StageObject {
+  public static chunkSize: number = 96
+
   public size: Vector
-  public chunkSize: number = 50
 
   constructor(size = new Vector(8, 5)) {
     super()
@@ -22,8 +23,9 @@ export class Map extends StageObject {
 
   render() {
     if (this.element) {
-      this.element.style.width = `${this.chunkSize * (this.size?.x ?? 8)}px`
-      this.element.style.height = `${this.chunkSize * (this.size?.y ?? 5)}px`
+      this.element.style.width = `${Map.chunkSize * (this.size?.x ?? 8) + 2}px`
+      this.element.style.height = `${Map.chunkSize * (this.size?.y ?? 5) + 2}px`
+      this.element.style.border = "1px solid #e4e4e4"
       this.element.style.display = "flex"
       this.element.style.flexWrap = "wrap"
     }
