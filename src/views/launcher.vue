@@ -8,7 +8,7 @@ import InitializingInner from "@/components/global/initializing-inner.vue";
 import { reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStage } from '@/stores/stage';
-import * as PIXI from "pixi.js";
+import { StageEngine } from '../stage/engine';
 
 const $router = useRouter();
 const $stage = useStage();
@@ -20,17 +20,11 @@ const progress = reactive<any>({
 })
 
 onMounted(() => {
-  $stage.instance = new PIXI.Application({
-    width: window.innerWidth,
-    height: window.innerHeight - 64,
-    resolution: window.devicePixelRatio || 1,
-    autoDensity: true,
-    backgroundColor: "#edeef0"
-  })
+  $stage.instance = new StageEngine()
 
   setTimeout(() => {
     progress.description = "Ready"
-    progress.stage = "Cleaning up..."
+    progress.stage = "Finishing up..."
     progress.value = 100
 
     setTimeout(() => $router.push({ name: "stage.main" }), 750);
