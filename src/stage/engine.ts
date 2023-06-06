@@ -7,6 +7,7 @@ export class StageEngine {
   public rootNode: StageObject
 
   private ticker?: number
+  private hooks: { [id: string]: any } = {}
 
   constructor() {
     this.rootNode = new StageObject()
@@ -14,6 +15,18 @@ export class StageEngine {
 
   get running() {
     return this.ticker != null
+  }
+
+  addSignalListener(id: string, callback: any) {
+    this.hooks[id] = callback
+  }
+
+  foreachSignalListener(id: string, callback: (func: any) => void) {
+    Object.entries(this.hooks).forEach(([k, v]) => {
+      if (k === id) {
+        callback(v)
+      }
+    })
   }
 
   start() {

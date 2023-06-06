@@ -2,6 +2,7 @@ import { StageObject, Vector } from "../object"
 import { ResourcePoint } from "./resource"
 import { MapChunk } from "./chunk"
 import { EnemyEntrance } from "./entrance"
+import { Entity } from '../entity/index';
 
 export class Map extends StageObject {
   public static chunkSize: number = 96
@@ -15,6 +16,13 @@ export class Map extends StageObject {
     this.visible = true
     this.element?.classList.add("sgT-map")
     this.mountElement(document.getElementById("sgT-map-wrapper") as HTMLElement)
+
+    // Add signal listener
+    this.addSignalListener("codingland.spawn.enemy", (pos: Vector) => {
+      const entity = new Entity(this.element as HTMLElement)
+      entity.position = pos
+      this.addChild(entity)
+    })
 
     // Follow size to create chunks
     let total = 0

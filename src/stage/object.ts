@@ -1,3 +1,5 @@
+import { useStage } from "@/stores/stage"
+
 export class Vector {
   public x?: number
   public y?: number
@@ -5,6 +7,10 @@ export class Vector {
   constructor(x?: number, y?: number) {
     this.x = x
     this.y = y
+  }
+
+  clone(): Vector {
+    return new Vector(this.x, this.y)
   }
 
   static rangeRandom(minX: number, maxX: number, minY: number, maxY: number) {
@@ -76,6 +82,8 @@ export class StageObject {
   replaceChild(index: number, o: StageObject) {
     this.children[index]?.dispose()
     this.children[index] = o
+    this.children[index].parent = this
+    this.children[index].nodeDepth = this.nodeDepth + 1
   }
 
   addChild(o: StageObject) {
@@ -99,6 +107,16 @@ export class StageObject {
     if (this.element) {
       document.getElementById(this.id)?.remove()
     }
+  }
+
+  addSignalListener(id: string, callback: any) {
+    useStage().instance?.addSignalListener(id, callback)
+  }
+
+  emitSignal(id: string, ...args: any[]) {
+    useStage().instance?.foreachSignalListener(id, (handler) => {
+      handler(...args)
+    })
   }
 
   dispose() {

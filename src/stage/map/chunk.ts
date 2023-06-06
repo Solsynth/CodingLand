@@ -1,6 +1,5 @@
 import { StageObject, Vector } from "../object"
 import { Map } from "."
-import { ResourcePoint } from "./resource"
 
 export class MapChunk extends StageObject {
   constructor(position: Vector) {
