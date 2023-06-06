@@ -6,6 +6,17 @@ export class Vector {
     this.x = x
     this.y = y
   }
+
+  static rangeRandom(minX: number, maxX: number, minY: number, maxY: number) {
+    return new Vector(
+      Math.floor(Math.random() * (maxX - 1 - minX + 1) + minX),
+      Math.floor(Math.random() * (maxY - 1 - minY + 1) + minY)
+    )
+  }
+
+  equals(v: Vector): boolean {
+    return v.x === this.x && v.y === this.y
+  }
 }
 
 export class Direction {
@@ -45,6 +56,26 @@ export class StageObject {
   constructor() {
     this.position = new Vector()
     this.direction = Direction.Up
+  }
+
+  doesOverlap(o: StageObject) {
+    if (o.visible && o.element && this.visible && this.element) {
+      const rect1 = this.element.getBoundingClientRect()
+      const rect2 = o.element.getBoundingClientRect()
+      return !(
+        rect1.top > rect2.bottom ||
+        rect1.right < rect2.left ||
+        rect1.bottom < rect2.top ||
+        rect1.left > rect2.right
+      )
+    } else {
+      return false
+    }
+  }
+
+  replaceChild(index: number, o: StageObject) {
+    this.children[index]?.dispose()
+    this.children[index] = o
   }
 
   addChild(o: StageObject) {

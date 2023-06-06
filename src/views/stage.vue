@@ -10,8 +10,10 @@
 import { onMounted } from "vue"
 import { useStage } from "@/stores/stage"
 import { Map } from "@/stage/map"
+import { useRouter } from "vue-router"
 
 const $stage = useStage()
+const $router = useRouter()
 
 onMounted(() => {
   const wrapper = document.getElementsByClassName("sgT-stage")[0] as HTMLElement
@@ -21,6 +23,9 @@ onMounted(() => {
     $stage.instance.start()
   } else {
     console.error("Launcher isn't finish their work. Game play disabled.")
+    console.error("Now auto redirecting to launcher...")
+
+    $router.push({ name: "main.menu.launcher" })
   }
 })
 </script>

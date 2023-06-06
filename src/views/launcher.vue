@@ -8,7 +8,7 @@ import InitializingInner from "@/components/global/initializing-inner.vue";
 import { reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStage } from '@/stores/stage';
-import { StageEngine } from '../stage/engine';
+import { StageEngine } from '@/stage/engine';
 
 const $router = useRouter();
 const $stage = useStage();
