@@ -1,7 +1,7 @@
 import { StageObject } from "./object"
 
 // Lifecycle update delay.
-const CLOCK_RATE = 250
+export const CLOCK_RATE = 100
 
 export class StageEngine {
   public rootNode: StageObject
@@ -10,6 +10,10 @@ export class StageEngine {
   private hooks: { [id: string]: any } = {}
 
   constructor() {
+    if(CLOCK_RATE < 100) {
+      console.warn("[Stage.js] WARNING: CLOCK RATE IS TOO FAST, MAY CAUSE BROWSER AND PAGE LAG")
+    }
+
     this.rootNode = new StageObject()
   }
 
@@ -17,11 +21,11 @@ export class StageEngine {
     return this.ticker != null
   }
 
-  addSignalListener(id: string, callback: any) {
+  addEventListener(id: string, callback: any) {
     this.hooks[id] = callback
   }
 
-  foreachSignalListener(id: string, callback: (func: any) => void) {
+  foreachEventListeners(id: string, callback: (func: any) => void) {
     Object.entries(this.hooks).forEach(([k, v]) => {
       if (k === id) {
         callback(v)

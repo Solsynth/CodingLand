@@ -1,23 +1,15 @@
 import { Map } from "./map"
 import { StageObject } from "../object"
 
-export class ResourcePoint extends StageObject {
-  public resource: string
-
-  constructor(chunk: HTMLElement, resource: string) {
+export class Wall extends StageObject {
+  constructor(chunk: HTMLElement) {
     super()
-    this.resource = resource
     this.visible = true
     this.mountElement(chunk)
   }
 
   get texture(): string {
-    switch (this.resource) {
-      case "codingland.wood":
-        return `<span class="mdi mdi-pine-tree-variant"></span>`
-      default:
-        return `<span class="mdi mdi-help-rhombus-outline"></span>`
-    }
+    return `<span class="mdi mdi-wall"></span>`
   }
 
   render() {

@@ -1,8 +1,10 @@
 import { StageObject, Vector } from "../object"
 import { ResourcePoint } from "./resource"
 import { MapChunk } from "./chunk"
-import { EnemyEntrance } from "./entrance"
-import { Entity } from '../entity/index';
+import { Entrance } from "./entrance"
+import { Basement } from "./basement"
+import { Enemy } from "../entity/enemy"
+import { Wall } from "./wall"
 
 export class Map extends StageObject {
   public static chunkSize: number = 96
@@ -18,10 +20,10 @@ export class Map extends StageObject {
     this.mountElement(document.getElementById("sgT-map-wrapper") as HTMLElement)
 
     // Add signal listener
-    this.addSignalListener("codingland.spawn.enemy", (pos: Vector) => {
-      const entity = new Entity(this.element as HTMLElement)
-      entity.position = pos
-      this.addChild(entity)
+    this.addEventListener("codingland.spawn.enemy", (pos: Vector) => {
+      const mob = new Enemy(this.element as HTMLElement)
+      mob.position = pos
+      this.addChild(mob)
     })
 
     // Follow size to create chunks
@@ -32,6 +34,8 @@ export class Map extends StageObject {
         const chunk = new MapChunk(new Vector(x, y))
 
         if (Math.random() > 0.75) {
+          chunk.addChild(new Wall(chunk.element as HTMLElement))
+        } else if (Math.random() > 0.45) {
           chunk.addChild(new ResourcePoint(chunk.element as HTMLElement, "codingland.wood"))
         }
 
@@ -41,9 +45,14 @@ export class Map extends StageObject {
       }
     }
 
+    // TODO Fix maybe random to same position
     // Append additional components
-    const additional = { entrance: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y)) }
-    additional.entrance.replaceChild(0, new EnemyEntrance(additional.entrance.element as HTMLElement))
+    const additional = {
+      entrance: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y)),
+      basement: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y))
+    }
+    additional.entrance.replaceChild(0, new Entrance(additional.entrance.element as HTMLElement))
+    additional.basement.replaceChild(0, new Basement(additional.basement.element as HTMLElement))
 
     console.log(`[Map Creator] Finish map chunk initialization, total created ${total} chunks.`)
   }

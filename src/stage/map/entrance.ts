@@ -1,7 +1,8 @@
+import { CLOCK_RATE } from "../engine"
 import { StageObject, Vector } from "../object"
-import { Map } from "."
+import { Map } from "./map"
 
-export class EnemyEntrance extends StageObject {
+export class Entrance extends StageObject {
   constructor(chunk: HTMLElement) {
     super()
     this.visible = true
@@ -9,21 +10,46 @@ export class EnemyEntrance extends StageObject {
   }
 
   get texture(): string {
-    return `<span class="mdi mdi-login-variant" style="color: #f44336"></span>`
+    return `<span class="mdi mdi-logout-variant" style="color: #f44336"></span>`
   }
 
-  private countdown = 0
+  get indicator(): HTMLElement {
+    const element = document.createElement("div")
+    element.style.position = "absolute"
+    element.style.bottom = "0"
+    element.style.left = "0"
+    element.style.width = `${Map.chunkSize}px`
+    element.style.textAlign = "center"
+    element.style.fontSize = "12px"
+    element.style.fontFamily = "'Roboto Mono', monospace"
+    element.className = "sgT-entrance-progress"
+    element.innerText = this.delay > 0 ? "Reload..." : `${((this.countdown * CLOCK_RATE) / 1000).toFixed(1)}s`
+    return element
+  }
+
+  // Use Clock Rate as unit. Every update will reduce one count.
+  private countdown = 60
+  // Use to reset countdown timer
+  private maxCountdown = 60
+  // Delay after finish once spawn
+  private delay = 10
 
   update() {
-    if (this.countdown > 0) {
-      this.countdown--
-    } else {
-      const spawnLocation = this.parent?.position?.clone() as Vector
-      spawnLocation.x = (spawnLocation.x ?? 0) + 0.25
-      spawnLocation.y = (spawnLocation.y ?? 0) + 0.25
+    if (this.delay <= 0) {
+      if (this.countdown > 0) {
+        this.countdown--
+      } else {
+        const spawnLocation = this.parent?.position?.clone() as Vector
+        spawnLocation.x = (spawnLocation.x ?? 0) + 0.25
+        spawnLocation.y = (spawnLocation.y ?? 0) + 0.25
 
-      this.emitSignal("codingland.spawn.enemy", spawnLocation)
-      this.countdown = 60
+        // TODO Add HUD to display spawner status
+        this.emit("codingland.spawn.enemy", spawnLocation)
+        this.countdown = this.maxCountdown
+        this.delay = 10
+      }
+    } else {
+      this.delay--
     }
   }
 
@@ -32,8 +58,9 @@ export class EnemyEntrance extends StageObject {
       this.element.style.width = `${Map.chunkSize}`
       this.element.style.height = `${Map.chunkSize}`
       this.element.style.userSelect = "none"
-      this.element.style.fontSize = "32px"
+      this.element.style.fontSize = `${Map.chunkSize / 3}px`
       this.element.innerHTML = this.texture
+      this.element.appendChild(this.indicator)
     }
   }
 }

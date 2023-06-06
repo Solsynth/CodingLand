@@ -14,22 +14,25 @@ export class Vector {
   }
 
   static rangeRandom(minX: number, maxX: number, minY: number, maxY: number) {
-    return new Vector(
-      Math.floor(Math.random() * (maxX - 1 - minX + 1) + minX),
-      Math.floor(Math.random() * (maxY - 1 - minY + 1) + minY)
-    )
+    const x = Math.floor(Math.random() * (maxX - 1 - minX + 1) + minX)
+    const y = Math.floor(Math.random() * (maxY - 1 - minY + 1) + minY)
+    return new Vector(x, y)
   }
 
   equals(v: Vector): boolean {
     return v.x === this.x && v.y === this.y
   }
+
+  add(v: Vector): Vector {
+    return new Vector((this.x ?? 0) + (v.x ?? 0), (this.y ?? 0) + (v.y ?? 0))
+  }
 }
 
 export class Direction {
-  public static Up = new Vector(0, 1)
+  public static Up = new Vector(0, -1)
   public static Right = new Vector(1, 0)
   public static Left = new Vector(-1, 0)
-  public static Down = new Vector(0, -1)
+  public static Down = new Vector(0, 1)
 }
 
 export class StageObject {
@@ -109,12 +112,12 @@ export class StageObject {
     }
   }
 
-  addSignalListener(id: string, callback: any) {
-    useStage().instance?.addSignalListener(id, callback)
+  addEventListener(id: string, callback: any) {
+    useStage().instance?.addEventListener(id, callback)
   }
 
-  emitSignal(id: string, ...args: any[]) {
-    useStage().instance?.foreachSignalListener(id, (handler) => {
+  emit(id: string, ...args: any[]) {
+    useStage().instance?.foreachEventListeners(id, (handler) => {
       handler(...args)
     })
   }

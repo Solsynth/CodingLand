@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import { onMounted } from "vue"
 import { useStage } from "@/stores/stage"
-import { Map } from "@/stage/map"
+import { Map } from "@/stage/map/map"
 import { useRouter } from "vue-router"
 
 const $stage = useStage()
@@ -42,5 +42,9 @@ onMounted(() => {
   place-items: center;
   left: 0;
   top: 0;
+}
+
+.sgT-entity-enemy {
+  transition: all .1s;
 }
 </style>

@@ -1,5 +1,5 @@
-import { StageObject } from "../object"
-import { Map } from "../map"
+import { StageObject, Vector } from "../object"
+import { Map } from "../map/map"
 
 export class Entity extends StageObject {
   public scale: number = 0.5
@@ -8,6 +8,11 @@ export class Entity extends StageObject {
     super()
     this.visible = true
     this.mountElement(map)
+    this.element?.classList.add("sgT-entity")
+  }
+
+  move(direction: Vector) {
+    this.position = this.position.add(direction)
   }
 
   render() {
@@ -17,6 +22,9 @@ export class Entity extends StageObject {
       this.element.style.height = `${Map.chunkSize * this.scale}px`
       this.element.style.left = `${(this.position.x ?? 0) * Map.chunkSize}px`
       this.element.style.top = `${(this.position.y ?? 0) * Map.chunkSize}px`
+      this.element.style.display = "flex"
+      this.element.style.justifyContent = "center"
+      this.element.style.placeItems = "center"
       this.element.style.borderRadius = "50px"
       this.element.style.backgroundColor = "#009688"
       this.element.style.boxShadow =
