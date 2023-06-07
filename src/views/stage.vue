@@ -1,13 +1,13 @@
 <template>
   <v-container fluid class="pa-0 fit-height">
-    <div id="sgT-stage" class="fit-width" style="height: calc(100vh - 64px)">
-      <div id="sgT-map-wrapper" class="fit-width fit-height"></div>
+    <div id="sgt-stage" class="fit-width" style="height: calc(100vh - 64px)">
+      <div id="sgt-map-wrapper" class="fit-width fit-height"></div>
     </div>
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue"
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useStage } from "@/stores/stage"
 import { Map } from "@/stage/map/map"
 import { useRouter } from "vue-router"
@@ -16,7 +16,7 @@ const $stage = useStage()
 const $router = useRouter()
 
 onMounted(() => {
-  const wrapper = document.getElementsByClassName("sgT-stage")[0] as HTMLElement
+  const wrapper = document.getElementsByClassName("sgt-stage")[0] as HTMLElement
 
   if ($stage.instance != null) {
     $stage.instance.rootNode.addChild(new Map())
@@ -28,14 +28,19 @@ onMounted(() => {
     $router.push({ name: "main.menu.launcher" })
   }
 })
+
+onUnmounted(() => {
+  $stage.instance?.pause()
+  $stage.instance = null
+})
 </script>
 
 <style>
-#sgT-stage {
+#sgt-stage {
   position: relative;
 }
 
-#sgT-map-wrapper {
+#sgt-map-wrapper {
   position: absolute;
   display: flex;
   justify-content: center;
@@ -44,7 +49,7 @@ onMounted(() => {
   top: 0;
 }
 
-.sgT-entity {
+.sgt-entity {
   transition: all .1s;
 }
 </style>

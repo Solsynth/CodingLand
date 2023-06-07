@@ -1,7 +1,30 @@
-import { useStage } from "@/stores/stage"
 import { StageEventBus } from "./eventbus"
 
+export class StageQueue<T> {
+  private elements: T[]
+
+  constructor() {
+    this.elements = []
+  }
+
+  push(element: T) {
+    this.elements.push(element)
+    return true
+  }
+
+  shift(): T {
+    return this.elements.shift() as T
+  }
+
+  size(): number {
+    return this.elements.length
+  }
+}
+
 export class Vector {
+  public static Null = new Vector() 
+  public static Zero = new Vector(0, 0)
+
   public x?: number
   public y?: number
 
@@ -19,9 +42,30 @@ export class Vector {
     const y = Math.floor(Math.random() * (maxY - 1 - minY + 1) + minY)
     return new Vector(x, y)
   }
+  
+  isEmpty(): boolean {
+    return this.x == null || this.y == null
+  }
+
+  extract(): number[] {
+    return [this.x ?? 0, this.y ?? 0]
+  }
 
   equals(v: Vector): boolean {
     return v.x === this.x && v.y === this.y
+  }
+
+  clamp(max: Vector, min = new Vector(0, 0)): Vector {
+    const x = Math.min(Math.max(this.x ?? 0, min.x ?? 0), max.x ?? 0)
+    const y = Math.min(Math.max(this.y ?? 0, min.y ?? 0), max.y ?? 0)
+    return new Vector(x, y)
+  }
+
+  floor(): Vector {
+    const vector = this.clone()
+    vector.x = Math.floor(vector.x ?? 0)
+    vector.y = Math.floor(vector.y ?? 0)
+    return vector
   }
 
   add(v: Vector): Vector {
@@ -51,7 +95,7 @@ export class Direction {
 export class StageObject {
   public type: string = "stage.object"
   public attributes: { [id: string]: any } = {}
-  public id: string = `sgT-object-${crypto.randomUUID()}`
+  public id: string = `sgt-object-${crypto.randomUUID()}`
 
   // Element for display
   // Keep `undefined` to skip render lifecycle
@@ -79,22 +123,7 @@ export class StageObject {
 
   constructor() {
     this.position = new Vector()
-    this.direction = Direction.Up
-  }
-
-  doesOverlap(o: StageObject) {
-    if (o.visible && o.element && this.visible && this.element) {
-      const rect1 = this.element.getBoundingClientRect()
-      const rect2 = o.element.getBoundingClientRect()
-      return !(
-        rect1.top > rect2.bottom ||
-        rect1.right < rect2.left ||
-        rect1.bottom < rect2.top ||
-        rect1.left > rect2.right
-      )
-    } else {
-      return false
-    }
+    this.direction = Vector.Zero
   }
 
   setChild(index: number, o: StageObject) {
@@ -102,21 +131,24 @@ export class StageObject {
     this.children[index] = o
     this.children[index].parent = this
     this.children[index].nodeDepth = this.nodeDepth + 1
+    this.children[index].mount()
   }
 
   addChild(o: StageObject) {
     o.setParent(this)
+    o.mount()
   }
 
   setParent(o: StageObject) {
     this.parent = o
     this.nodeDepth = o.nodeDepth + 1
     o.children.push(this)
+    this.mount()
   }
 
   mountElement(target?: HTMLElement) {
     if (this.element) {
-      const element = target ?? document.getElementById("sgT-stage")
+      const element = target ?? document.getElementById("sgt-stage")
       element?.appendChild(this.element)
     }
   }
@@ -142,6 +174,8 @@ export class StageObject {
       this.parent.children = this.parent.children.filter((node) => node.id !== this.id)
     }
   }
+
+  mount() {}
 
   render() {}
 

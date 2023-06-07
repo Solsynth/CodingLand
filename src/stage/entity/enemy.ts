@@ -1,12 +1,17 @@
 import { Entity } from "./entity"
 import { Map } from "../map/map"
+import { BasementPosition } from "../map/basement"
 
 export class Enemy extends Entity {
   public type = "codingland.entities.enemy"
 
+  public damage = 4.0
+
+  private ready = false
+
   constructor(map: HTMLElement) {
     super(map)
-    this.element?.classList.add("sgT-entity-enemy")
+    this.element?.classList.add("sgt-entity-enemy")
   }
 
   get texture(): string {
@@ -16,16 +21,22 @@ export class Enemy extends Entity {
   private moveCountdown = 20
   private maxMoveCountdown = 20
 
-  locate() {
-    const map = this.parent as Map
+  async locate(): Promise<boolean> {
+    const next = await this.lookupRoad(BasementPosition)
+    this.direction = next.nextDirection
+    return next.success
   }
 
   update() {
-    if(this.moveCountdown > 0) {
+    if (this.moveCountdown > 0) {
+      if (!this.ready) {
+        this.locate().then((success) => (this.ready = success))
+      }
       this.moveCountdown--
     } else {
       this.locate()
       this.move(this.direction)
+      this.ready = false
       this.moveCountdown = this.maxMoveCountdown
     }
   }

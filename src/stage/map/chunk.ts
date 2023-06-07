@@ -8,8 +8,8 @@ export class MapChunk extends StageObject {
     super()
     this.position = position
     this.visible = true
-    this.element?.classList.add("sgT-map-chunk")
-    this.mountElement(document.getElementsByClassName("sgT-map")[0] as HTMLElement)
+    this.element?.classList.add("sgt-map-chunk")
+    this.mountElement(document.getElementsByClassName("sgt-map")[0] as HTMLElement)
   }
 
   render() {

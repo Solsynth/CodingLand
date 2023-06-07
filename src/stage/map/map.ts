@@ -5,6 +5,7 @@ import { Entrance } from "./entrance"
 import { Basement } from "./basement"
 import { Enemy } from "../entity/enemy"
 import { Wall } from "./wall"
+import { Entity } from "../entity/entity"
 
 export class Map extends StageObject {
   public type = "codingland.map"
@@ -18,8 +19,8 @@ export class Map extends StageObject {
     this.size.x = size.x ?? 8
     this.size.y = size.y ?? 5
     this.visible = true
-    this.element?.classList.add("sgT-map")
-    this.mountElement(document.getElementById("sgT-map-wrapper") as HTMLElement)
+    this.element?.classList.add("sgt-map")
+    this.mountElement(document.getElementById("sgt-map-wrapper") as HTMLElement)
 
     // Add signal listener
     this.addEventListener("codingland.spawn.enemy", (pos: Vector) => {
@@ -60,10 +61,13 @@ export class Map extends StageObject {
   }
 
   getChunk(position: Vector): MapChunk {
-    const v = position.clone()
-    v.x = Math.floor(v.x ?? 0)
-    v.y = Math.floor(v.y ?? 0)
-    return this.children.filter((child) => child.position.equals(v))[0]
+    const v = position.floor()
+    return this.children.filter((child) => child instanceof MapChunk && child.position.equals(v))[0]
+  }
+
+  getEntities(position: Vector): Entity[] {
+    const v = position.floor()
+    return this.children.filter((child) => child instanceof Entity && child.position.equals(v)) as Entity[]
   }
 
   render() {

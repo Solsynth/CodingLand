@@ -3,7 +3,7 @@ import { defineStore } from "pinia"
 import { ref } from "vue"
 
 export const useStage = defineStore("stage", () => {
-  const instance = ref<StageEngine>()
+  const instance = ref<StageEngine | null>()
 
   return { instance }
 })

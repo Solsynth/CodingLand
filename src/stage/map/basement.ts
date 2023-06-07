@@ -1,17 +1,55 @@
+import { Enemy } from "../entity/enemy"
 import { StageObject, Vector } from "../object"
+import type { MapChunk } from "./chunk"
 import { Map } from "./map"
+
+export let BasementPosition: Vector
 
 export class Basement extends StageObject {
   public type = "codingland.buildings.basement"
 
+  public health: number
+  public maxHealth = 100
+
   constructor(chunk: HTMLElement) {
     super()
+    this.health = this.maxHealth
     this.visible = true
     this.mountElement(chunk)
   }
 
   get texture(): string {
     return `<span class="mdi mdi-home" style="color: #3f51b5"></span>`
+  }
+
+  get indicator(): HTMLElement {
+    const element = document.createElement("div")
+    element.style.position = "absolute"
+    element.style.bottom = "0"
+    element.style.left = "0"
+    element.style.width = `${Map.chunkSize}px`
+    element.style.textAlign = "center"
+    element.style.fontSize = "12px"
+    element.style.fontFamily = "'Roboto Mono', monospace"
+    element.className = "sgt-basement-healthbar"
+    element.innerText = `${this.health.toPrecision(3)}%`
+    return element
+  }
+
+  mount() {
+    BasementPosition = (this.parent as MapChunk).position
+  }
+
+  update() {
+    const enemies = (this.parent?.parent as Map).getEntities(this.position)
+    for (let enemy of enemies) {
+      // Enemy enter the basement
+      if (enemy instanceof Enemy) {
+        enemy.dispose()
+        this.health -= enemy.damage
+        this.emitEvent("codingland.take-damage.entrance", this.health, enemy.id)
+      }
+    }
   }
 
   render() {
@@ -21,6 +59,7 @@ export class Basement extends StageObject {
       this.element.style.userSelect = "none"
       this.element.style.fontSize = `${Map.chunkSize / 3}px`
       this.element.innerHTML = this.texture
+      this.element.appendChild(this.indicator)
     }
   }
 }

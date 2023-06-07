@@ -24,7 +24,7 @@ export class Entrance extends StageObject {
     element.style.textAlign = "center"
     element.style.fontSize = "12px"
     element.style.fontFamily = "'Roboto Mono', monospace"
-    element.className = "sgT-entrance-progress"
+    element.className = "sgt-entrance-progress"
     element.innerText = this.delay > 0 ? "Reload..." : `${((this.countdown * CLOCK_RATE) / 1000).toFixed(1)}s`
     return element
   }

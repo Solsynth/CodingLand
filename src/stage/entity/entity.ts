@@ -1,5 +1,18 @@
-import { StageObject, Vector } from "../object"
+import { Direction, StageObject, StageQueue, Vector } from "../object"
 import { Map } from "../map/map"
+
+export type LookupResult = { next: Vector; nextDirection: Vector; history: LookupTask[]; success: boolean }
+
+class LookupTask {
+  public position: Vector
+  public direction: Vector
+  public parent?: LookupTask
+  constructor(pos: Vector, dr: Vector, parent?: LookupTask) {
+    this.position = pos
+    this.direction = dr
+    this.parent = parent
+  }
+}
 
 export class Entity extends StageObject {
   public type = "codingland.entity"
@@ -10,7 +23,88 @@ export class Entity extends StageObject {
     super()
     this.visible = true
     this.mountElement(map)
-    this.element?.classList.add("sgT-entity")
+    this.element?.classList.add("sgt-entity")
+  }
+
+  async lookupRoad(to: Vector): Promise<LookupResult> {
+    const from = this.position.clone()
+    const map = this.parent as Map
+
+    let step = 0
+    let arrived = false
+    const visited: boolean[][] = []
+    const tasks = new StageQueue<LookupTask>()
+    const choices = [Direction.Up, Direction.Down, Direction.Left, Direction.Right]
+
+    tasks.push(new LookupTask(this.position, Vector.Null))
+
+    // Breadth-first Algorithm
+    function search(): LookupResult {
+      const pin = tasks.shift()
+      if (pin.position.floor().equals(to)) {
+        let history: LookupTask[] = [pin]
+        let pointer = pin.parent
+
+        arrived = true
+
+        // Backtrack
+        while (pointer != null) {
+          history.push(pointer)
+          pointer = pointer.parent
+        }
+
+        history = history.reverse()
+
+        console.log(history, step)
+        if (history.length >= 1) {
+          const index = history.length <= 1 ? 0 : 1
+          return {
+            next: history[index].position,
+            nextDirection: history[index].direction,
+            success: true,
+            history
+          }
+        } else {
+          return {
+            next: from,
+            nextDirection: Vector.Zero,
+            success: true,
+            history
+          }
+        }
+      }
+
+      step++
+      for (let choice of choices) {
+        const pos = pin.position.add(choice).floor()
+        const chunk = map.getChunk(pos)
+        if (chunk == null || chunk.children[0]?.attributes?.passable === false) {
+          continue
+        } 
+
+        const [x, y] = pos.clamp(map.size).extract()
+        if (visited[y] == null) {
+          visited[y] = []
+        }
+        if (!visited[y][x]) {
+          tasks.push(new LookupTask(new Vector(x, y), choice, pin))
+          visited[y][x] = true
+        }
+      }
+
+      // Couldn't find target position
+      if (tasks.size() <= 0 && !arrived)
+        return {
+          next: Vector.Null,
+          nextDirection: Vector.Null,
+          history: [],
+          success: false
+        }
+
+      return search()
+    }
+
+    return search()
   }
 
   move(direction: Vector): boolean {
@@ -25,7 +119,7 @@ export class Entity extends StageObject {
       // Play could not walk straight animation
       const value = direction.multiply(0.5)
       this.position = this.position.add(value)
-      setTimeout(() => this.position = this.position.subtract(value), 100)
+      setTimeout(() => (this.position = this.position.subtract(value)), 50)
       return false
     }
   }
