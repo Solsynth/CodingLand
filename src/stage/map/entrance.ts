@@ -3,6 +3,8 @@ import { StageObject, Vector } from "../object"
 import { Map } from "./map"
 
 export class Entrance extends StageObject {
+  public type = "codingland.buildings.entrance"
+
   constructor(chunk: HTMLElement) {
     super()
     this.visible = true
@@ -44,7 +46,7 @@ export class Entrance extends StageObject {
         spawnLocation.y = (spawnLocation.y ?? 0) + 0.25
 
         // TODO Add HUD to display spawner status
-        this.emit("codingland.spawn.enemy", spawnLocation)
+        this.emitEvent("codingland.spawn.enemy", spawnLocation)
         this.countdown = this.maxCountdown
         this.delay = 10
       }

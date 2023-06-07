@@ -2,6 +2,8 @@ import { Map } from "./map"
 import { StageObject } from "../object"
 
 export class ResourcePoint extends StageObject {
+  public type = "codingland.buildings.resource"
+
   public resource: string
 
   constructor(chunk: HTMLElement, resource: string) {

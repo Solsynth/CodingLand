@@ -2,6 +2,8 @@ import { StageObject, Vector } from "../object"
 import { Map } from "./map"
 
 export class MapChunk extends StageObject {
+  public type = "codingland.maps"
+
   constructor(position: Vector) {
     super()
     this.position = position

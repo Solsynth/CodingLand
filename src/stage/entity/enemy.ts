@@ -1,9 +1,9 @@
 import { Entity } from "./entity"
 import { Map } from "../map/map"
-import { useStage } from "@/stores/stage"
-import { Direction } from "../object"
 
 export class Enemy extends Entity {
+  public type = "codingland.entities.enemy"
+
   constructor(map: HTMLElement) {
     super(map)
     this.element?.classList.add("sgT-entity-enemy")
@@ -16,16 +16,16 @@ export class Enemy extends Entity {
   private moveCountdown = 20
   private maxMoveCountdown = 20
 
-  locateEndpoint() {
-    // TODO Make stage singleton and provide a way to access node direct, we need access map instance to use it getChunk function
+  locate() {
+    const map = this.parent as Map
   }
 
   update() {
-    // TODO Replace with locateEndpoint()
     if(this.moveCountdown > 0) {
       this.moveCountdown--
     } else {
-      this.move(Direction.Up)
+      this.locate()
+      this.move(this.direction)
       this.moveCountdown = this.maxMoveCountdown
     }
   }

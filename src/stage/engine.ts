@@ -3,11 +3,11 @@ import { StageObject } from "./object"
 // Lifecycle update delay.
 export const CLOCK_RATE = 100
 
+// TODO Add a debug tool to inspect node tree easily
 export class StageEngine {
   public rootNode: StageObject
 
   private ticker?: number
-  private hooks: { [id: string]: any } = {}
 
   constructor() {
     if(CLOCK_RATE < 100) {
@@ -19,18 +19,6 @@ export class StageEngine {
 
   get running() {
     return this.ticker != null
-  }
-
-  addEventListener(id: string, callback: any) {
-    this.hooks[id] = callback
-  }
-
-  foreachEventListeners(id: string, callback: (func: any) => void) {
-    Object.entries(this.hooks).forEach(([k, v]) => {
-      if (k === id) {
-        callback(v)
-      }
-    })
   }
 
   start() {

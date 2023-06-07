@@ -7,6 +7,8 @@ import { Enemy } from "../entity/enemy"
 import { Wall } from "./wall"
 
 export class Map extends StageObject {
+  public type = "codingland.map"
+
   public static chunkSize: number = 96
 
   public size = new Vector()
@@ -51,14 +53,17 @@ export class Map extends StageObject {
       entrance: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y)),
       basement: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y))
     }
-    additional.entrance.replaceChild(0, new Entrance(additional.entrance.element as HTMLElement))
-    additional.basement.replaceChild(0, new Basement(additional.basement.element as HTMLElement))
+    additional.entrance.setChild(0, new Entrance(additional.entrance.element as HTMLElement))
+    additional.basement.setChild(0, new Basement(additional.basement.element as HTMLElement))
 
     console.log(`[Map Creator] Finish map chunk initialization, total created ${total} chunks.`)
   }
 
   getChunk(position: Vector): MapChunk {
-    return this.children.filter((child) => child.position.equals(position))[0]
+    const v = position.clone()
+    v.x = Math.floor(v.x ?? 0)
+    v.y = Math.floor(v.y ?? 0)
+    return this.children.filter((child) => child.position.equals(v))[0]
   }
 
   render() {

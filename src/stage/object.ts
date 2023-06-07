@@ -1,4 +1,5 @@
 import { useStage } from "@/stores/stage"
+import { StageEventBus } from "./eventbus"
 
 export class Vector {
   public x?: number
@@ -26,6 +27,18 @@ export class Vector {
   add(v: Vector): Vector {
     return new Vector((this.x ?? 0) + (v.x ?? 0), (this.y ?? 0) + (v.y ?? 0))
   }
+
+  subtract(v: Vector): Vector {
+    return new Vector((this.x ?? 0) - (v.x ?? 0), (this.y ?? 0) - (v.y ?? 0))
+  }
+
+  multiply(c: number): Vector {
+    return new Vector((this.x ?? 0) * c, (this.y ?? 0) * c)
+  }
+
+  divide(c: number): Vector {
+    return new Vector((this.x ?? 0) / c, (this.y ?? 0) / c)
+  }
 }
 
 export class Direction {
@@ -36,6 +49,8 @@ export class Direction {
 }
 
 export class StageObject {
+  public type: string = "stage.object"
+  public attributes: { [id: string]: any } = {}
   public id: string = `sgT-object-${crypto.randomUUID()}`
 
   // Element for display
@@ -82,7 +97,7 @@ export class StageObject {
     }
   }
 
-  replaceChild(index: number, o: StageObject) {
+  setChild(index: number, o: StageObject) {
     this.children[index]?.dispose()
     this.children[index] = o
     this.children[index].parent = this
@@ -113,13 +128,11 @@ export class StageObject {
   }
 
   addEventListener(id: string, callback: any) {
-    useStage().instance?.addEventListener(id, callback)
+    new StageEventBus().addListener(id, callback)
   }
 
-  emit(id: string, ...args: any[]) {
-    useStage().instance?.foreachEventListeners(id, (handler) => {
-      handler(...args)
-    })
+  emitEvent(id: string, ...args: any[]) {
+    new StageEventBus().emit(id, ...args)
   }
 
   dispose() {

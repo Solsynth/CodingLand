@@ -2,6 +2,8 @@ import { StageObject, Vector } from "../object"
 import { Map } from "../map/map"
 
 export class Entity extends StageObject {
+  public type = "codingland.entity"
+
   public scale: number = 0.5
 
   constructor(map: HTMLElement) {
@@ -11,8 +13,21 @@ export class Entity extends StageObject {
     this.element?.classList.add("sgT-entity")
   }
 
-  move(direction: Vector) {
-    this.position = this.position.add(direction)
+  move(direction: Vector): boolean {
+    const target = this.position.add(direction)
+    const targetChunk = (this.parent as Map).getChunk(target)
+    // Detect target place is passable
+    // If could not get target chunk details, means that place is out of map.
+    if (targetChunk != null && targetChunk.children[0]?.attributes?.passable !== false) {
+      this.position = target
+      return true
+    } else {
+      // Play could not walk straight animation
+      const value = direction.multiply(0.5)
+      this.position = this.position.add(value)
+      setTimeout(() => this.position = this.position.subtract(value), 100)
+      return false
+    }
   }
 
   render() {

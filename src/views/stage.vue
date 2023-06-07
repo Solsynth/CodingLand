@@ -44,7 +44,7 @@ onMounted(() => {
   top: 0;
 }
 
-.sgT-entity-enemy {
+.sgT-entity {
   transition: all .1s;
 }
 </style>

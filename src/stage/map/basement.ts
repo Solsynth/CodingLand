@@ -2,6 +2,8 @@ import { StageObject, Vector } from "../object"
 import { Map } from "./map"
 
 export class Basement extends StageObject {
+  public type = "codingland.buildings.basement"
+
   constructor(chunk: HTMLElement) {
     super()
     this.visible = true

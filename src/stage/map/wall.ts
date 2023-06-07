@@ -2,6 +2,9 @@ import { Map } from "./map"
 import { StageObject } from "../object"
 
 export class Wall extends StageObject {
+  public type = "codingland.buildings.wall"
+  public attributes = { passable: false }
+
   constructor(chunk: HTMLElement) {
     super()
     this.visible = true
