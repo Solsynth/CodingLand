@@ -15,6 +15,7 @@ export class StageEventBus {
   }
 
   emit(id: string, ...args: any[]) {
+    console.debug(`[EventBus] Emitted an event ${id} at ${new Date()}.`)
     Object.entries(this.hooks).forEach(([k, v]) => {
       if (k === id) {
         v(...args)

@@ -55,7 +55,6 @@ export class Entity extends StageObject {
 
         history = history.reverse()
 
-        console.log(history, step)
         if (history.length >= 1) {
           const index = history.length <= 1 ? 0 : 1
           return {

@@ -168,7 +168,10 @@ export class StageObject {
   }
 
   dispose() {
-    this.unmountElement()
+    if(this.element) {
+      this.element.style.opacity = "0"
+      setTimeout(() => this.unmountElement(), 1000)
+    }
     this.children = []
     if (this.parent) {
       this.parent.children = this.parent.children.filter((node) => node.id !== this.id)

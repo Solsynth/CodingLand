@@ -67,7 +67,7 @@ export class Map extends StageObject {
 
   getEntities(position: Vector): Entity[] {
     const v = position.floor()
-    return this.children.filter((child) => child instanceof Entity && child.position.equals(v)) as Entity[]
+    return this.children.filter((child) => child instanceof Entity && child.position.floor().equals(v)) as Entity[]
   }
 
   render() {

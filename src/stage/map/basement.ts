@@ -41,7 +41,7 @@ export class Basement extends StageObject {
   }
 
   update() {
-    const enemies = (this.parent?.parent as Map).getEntities(this.position)
+    const enemies = (this.parent?.parent as Map).getEntities((this.parent as MapChunk).position)
     for (let enemy of enemies) {
       // Enemy enter the basement
       if (enemy instanceof Enemy) {
