@@ -49,7 +49,7 @@ export class Basement extends StageObject {
       if (enemy instanceof DirectAttacker) {
         enemy.dispose()
         this.health -= enemy.damage
-        this.emitEvent("codingland.damage.entrance", this.health, enemy.id)
+        this.emitEvent("codingland.damage.basement", this.health, enemy.id)
       }
     }
   }
