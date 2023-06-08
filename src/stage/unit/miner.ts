@@ -2,6 +2,7 @@ import type { MapChunk } from "../map/chunk"
 import { ResourcePoint } from "../map/resource"
 import { StageObject } from "../object"
 import { Map } from "../map/map"
+import { Inventory, InventorySlot } from "../inventory/inventory"
 
 /**
  * Resource Miner
@@ -35,25 +36,21 @@ export class ResourceMiner extends StageObject {
     }
   }
 
+  public get outputCount(): number {
+    // Every level produce 2 more resource
+    return 10 + (this.level - 1) * 2
+  }
+
   private countdown = 30
   private get maxCountdown(): number {
     // Every level reduce 1 tick countdown
     return 30 - Math.min(Math.max((this.level - 1) * 1, 0), 25)
   }
 
-  private get output(): number {
-    // Every level produce 2 more resource
-    return 10 + (this.level - 1) * 2
-  }
-
   constructor(chunk: HTMLElement) {
     super()
     this.visible = true
     this.mountElement(chunk)
-  }
-
-  mount() {
-
   }
 
   render() {
@@ -77,7 +74,8 @@ export class ResourceMiner extends StageObject {
       this.countdown--
     } else {
       if (this.valid) {
-        this.emitEvent("codingland.produce.resource", this.product, this.output)
+        new Inventory().addItem(new InventorySlot(this.product, this.outputCount))
+        this.emitEvent("codingland.produce.resource", this.product, this.outputCount)
       }
       this.countdown = this.maxCountdown
     }
