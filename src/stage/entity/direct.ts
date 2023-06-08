@@ -1,15 +1,21 @@
 import { Entity, type LookupResult } from "./entity"
 import { Map } from "../map/map"
 import { BasementPosition } from "../map/basement"
-import type { MapChunk } from "../map/chunk"
 
 // TODO Cleanup cache when map layout change
 let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
-export class Enemy extends Entity {
+/**
+ * Direct Attacker
+ * 
+ * Behaviour: Run into the basement, won't attack others.
+ * 
+ * Party: Hostile
+ */
+export class DirectAttacker extends Entity {
   public type = "codingland.entities.enemy"
 
-  public damage = 4.0
+  public damage = 20.0
 
   private ready = false
 

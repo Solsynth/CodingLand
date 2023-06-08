@@ -3,7 +3,7 @@ import { ResourcePoint } from "./resource"
 import { MapChunk } from "./chunk"
 import { Entrance } from "./entrance"
 import { Basement } from "./basement"
-import { Enemy } from "../entity/enemy"
+import { DirectAttacker } from "../entity/direct"
 import { Wall } from "./wall"
 import { Entity } from "../entity/entity"
 
@@ -24,7 +24,7 @@ export class Map extends StageObject {
 
     // Add signal listener
     this.addEventListener("codingland.spawn.enemy", (pos: Vector) => {
-      const mob = new Enemy(this.element as HTMLElement)
+      const mob = new DirectAttacker(this.element as HTMLElement)
       mob.position = pos
       this.addChild(mob)
     })

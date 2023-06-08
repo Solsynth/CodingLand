@@ -47,6 +47,11 @@ export class Vector {
     return this.x == null || this.y == null
   }
 
+  toString(): string {
+    const [x, y] = this.extract()
+    return `(${x}, ${y})`
+  }
+
   extract(): number[] {
     return [this.x ?? 0, this.y ?? 0]
   }

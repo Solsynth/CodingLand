@@ -29,9 +29,7 @@ export class Entrance extends StageObject {
     return element
   }
 
-  // Use Clock Rate as unit. Every update will reduce one count.
   private countdown = 60
-  // Use to reset countdown timer
   private maxCountdown = 60
   // Delay after finish once spawn
   private delay = 10

@@ -1,4 +1,4 @@
-import { Enemy } from "../entity/enemy"
+import { DirectAttacker } from "../entity/direct"
 import { StageObject, Vector } from "../object"
 import type { MapChunk } from "./chunk"
 import { Map } from "./map"
@@ -19,7 +19,9 @@ export class Basement extends StageObject {
   }
 
   get texture(): string {
-    return `<span class="mdi mdi-home" style="color: #3f51b5"></span>`
+    return this.health > 0
+      ? `<span class="mdi mdi-home" style="color: #3f51b5"></span>`
+      : `<span class="mdi mdi-home-flood" color="color: #9da6b7"></span>`
   }
 
   get indicator(): HTMLElement {
@@ -44,10 +46,10 @@ export class Basement extends StageObject {
     const enemies = (this.parent?.parent as Map).getEntities((this.parent as MapChunk).position)
     for (let enemy of enemies) {
       // Enemy enter the basement
-      if (enemy instanceof Enemy) {
+      if (enemy instanceof DirectAttacker) {
         enemy.dispose()
         this.health -= enemy.damage
-        this.emitEvent("codingland.take-damage.entrance", this.health, enemy.id)
+        this.emitEvent("codingland.damage.entrance", this.health, enemy.id)
       }
     }
   }
