@@ -1,6 +1,10 @@
-import { Entity } from "./entity"
+import { Entity, type LookupResult } from "./entity"
 import { Map } from "../map/map"
 import { BasementPosition } from "../map/basement"
+import type { MapChunk } from "../map/chunk"
+
+// TODO Cleanup cache when map layout change
+let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
 export class Enemy extends Entity {
   public type = "codingland.entities.enemy"
@@ -22,7 +26,16 @@ export class Enemy extends Entity {
   private maxMoveCountdown = 20
 
   async locate(): Promise<boolean> {
-    const next = await this.lookupRoad(BasementPosition)
+    const pos = this.position.floor()
+    if (pos.x && lookupCache[pos.x] == null) {
+      lookupCache[pos.x] = {}
+    } else if (pos.x && pos.y && lookupCache[pos.x][pos.y] != null) {
+      this.direction = lookupCache[pos.x][pos.y].nextDirection
+      return true
+    }
+
+    const next = await this.lookupPath(BasementPosition)
+    if (pos.x && pos.y) lookupCache[pos.x][pos.y] = next // Update cache
     this.direction = next.nextDirection
     return next.success
   }

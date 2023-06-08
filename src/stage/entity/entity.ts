@@ -26,7 +26,7 @@ export class Entity extends StageObject {
     this.element?.classList.add("sgt-entity")
   }
 
-  async lookupRoad(to: Vector): Promise<LookupResult> {
+  async lookupPath(to: Vector): Promise<LookupResult> {
     const from = this.position.clone()
     const map = this.parent as Map
 
@@ -55,11 +55,10 @@ export class Entity extends StageObject {
 
         history = history.reverse()
 
-        if (history.length >= 1) {
-          const index = history.length <= 1 ? 0 : 1
+        if (history.length >= 2) {
           return {
-            next: history[index].position,
-            nextDirection: history[index].direction,
+            next: history[1].position,
+            nextDirection: history[1].direction,
             success: true,
             history
           }
@@ -79,7 +78,7 @@ export class Entity extends StageObject {
         const chunk = map.getChunk(pos)
         if (chunk == null || chunk.children[0]?.attributes?.passable === false) {
           continue
-        } 
+        }
 
         const [x, y] = pos.clamp(map.size).extract()
         if (visited[y] == null) {
