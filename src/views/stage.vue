@@ -4,7 +4,7 @@
       <div id="sgt-map-wrapper" class="fit-width fit-height"></div>
     </div>
 
-    <div class="sgt-console sgt-console-inventory">
+    <div class="sgt-console sgt-widget sgt-console-inventory">
       <v-row dense>
         <v-col :cols="12">
           <v-card>
@@ -30,7 +30,8 @@
                 <div v-if="Object.entries(recent).length <= 0">No Income & Expenses</div>
                 <!-- List -->
                 <div v-for="(v, i) in Object.entries(recent)" :key="i">
-                  <div>{{ v[0] }} {{ v[1].value }}</div>
+                  <div v-if="v[1].negative" class="text-red">{{ v[0] }} -{{ v[1].value }}</div>
+                  <div v-else class="text-green">{{ v[0] }} +{{ v[1].value }}</div>
                 </div>
               </div>
             </v-card-text>
@@ -38,17 +39,43 @@
         </v-col>
       </v-row>
     </div>
+
+    <v-navigation-drawer v-model="actions.display" :scrim="false" temporary width="300" location="right"
+                         class="sgt-widget">
+      <template #prepend>
+        <v-list-item lines="two" :title="actions.opts.title" :subtitle="actions.opts.subtitle">
+          <template #prepend>
+            <v-avatar style="font-size: 24px">
+              <div v-html="actions.opts.icon" />
+            </v-avatar>
+          </template>
+        </v-list-item>
+      </template>
+
+      <template #append>
+        <v-list-item lines="one" title="Close" class="border-t" @click="actions.display = false">
+          <template #prepend>
+            <v-avatar>
+              <v-icon style="font-size: 24px" color="red" icon="mdi-logout-variant" />
+            </v-avatar>
+          </template>
+        </v-list-item>
+      </template>
+    </v-navigation-drawer>
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, reactive, ref, watch } from "vue"
 import { useStage } from "@/stores/stage"
 import { Map } from "@/stage/map/map"
+import type { StagePopupOptions } from "@/stage/object"
 import { useRouter } from "vue-router"
 
 const recent = ref<{ [id: string]: { negative: boolean; value: string } }>({})
 const inventory = ref<any>([])
+
+const actions = reactive<any>({ display: false, opts: {} })
 
 const $stage = useStage()
 const $router = useRouter()
@@ -58,7 +85,7 @@ watch($stage.inventory, (v) => {
 })
 
 onMounted(() => {
-  const wrapper = document.getElementsByClassName("sgt-stage")[0] as HTMLElement
+  document.body.style.overflow = "hidden"
 
   if ($stage.instance != null) {
     $stage.instance.rootNode.addChild(new Map())
@@ -67,6 +94,11 @@ onMounted(() => {
     $stage.eventbus.addListener("codingland.inventory.refresh", (v: any, w: any) => {
       inventory.value = w
       recent.value = v
+    })
+
+    $stage.eventbus.addListener("codingland.popups.show.actions", (opts: StagePopupOptions) => {
+      actions.opts = opts
+      actions.display = true
     })
   } else {
     console.error("Launcher isn't finish their work. Game play disabled.")
@@ -79,10 +111,30 @@ onMounted(() => {
 onUnmounted(() => {
   $stage.instance?.pause()
   $stage.instance = null
+
+  document.body.style.overflow = "auto"
 })
 </script>
 
 <style>
+/* CodingLand HUD & Others requirements css */
+.card-bottom .v-overlay__content {
+  bottom: 0;
+  margin-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.card-actions-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.card-actions-group .v-btn {
+  text-transform: unset;
+}
+
+/* Stage.js requirement css */
 #sgt-stage {
   position: relative;
 }
@@ -96,9 +148,12 @@ onUnmounted(() => {
   top: 0;
 }
 
-.sgt-console {
+.sgt-widget {
   font-family: "Roboto Mono", monospace;
   font-size: 12px;
+}
+
+.sgt-console {
   min-width: 280px;
   position: absolute;
   bottom: 12px;
@@ -107,5 +162,10 @@ onUnmounted(() => {
 
 .sgt-entity {
   transition: all 0.1s;
+}
+
+.bottom-popup {
+  bottom: 0;
+  left: 0;
 }
 </style>

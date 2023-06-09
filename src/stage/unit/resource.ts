@@ -1,8 +1,9 @@
-import { Map } from "./map"
+import { Map } from "../map/map"
 import { StageObject } from "../object"
 
 export class ResourcePoint extends StageObject {
-  public type = "codingland.buildings.resource"
+  public type = "codingland.environments.resource"
+  public attributes = {}
 
   public resource: string
 

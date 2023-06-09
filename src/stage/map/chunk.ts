@@ -1,9 +1,9 @@
-import { StageObject, Vector } from "../object"
-import { ResourceMiner } from "../unit/miner"
+import { StageObject, type StagePopupOptions, Vector } from "../object"
 import { Map } from "./map"
+import { ResourceMiner } from "@/stage/unit/miner"
 
 export class MapChunk extends StageObject {
-  public type = "codingland.maps"
+  public type = "codingland.maps.chunk"
 
   constructor(position: Vector) {
     super()
@@ -11,14 +11,18 @@ export class MapChunk extends StageObject {
     this.visible = true
     this.element?.classList.add("sgt-map-chunk")
     this.mountElement(document.getElementsByClassName("sgt-map")[0] as HTMLElement)
+  }
 
-    // For test now
-    this.element?.addEventListener("click", () => {
-      if(this.element) {
-        this.setChild(1, new ResourceMiner(this.element))
-        console.log(`Deployed resource miner at ${this.position.toString()}`, this.children)
+  renderActions(): StagePopupOptions {
+    return {
+      icon: (this.children[0] as any)?.texture ?? `<span class="mdi mdi-help-rhombus"></span>`,
+      title: (this.children[0] as any)?.attributes.name ?? "Area",
+      subtitle: `At ${this.position.toString()}`,
+      caller: this,
+      callbacks: {
+        "build.miner": () => this.setChild(1, new ResourceMiner(this.element as HTMLElement))
       }
-    })
+    }
   }
 
   render() {

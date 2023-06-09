@@ -1,12 +1,13 @@
 import { DirectAttacker } from "../entity/direct"
 import { StageObject, Vector } from "../object"
-import type { MapChunk } from "./chunk"
-import { Map } from "./map"
+import type { MapChunk } from "../map/chunk"
+import { Map } from "../map/map"
 
 export let BasementPosition: Vector
 
 export class Basement extends StageObject {
   public type = "codingland.buildings.basement"
+  public attributes = {}
 
   public health: number
   public maxHealth = 100
@@ -21,7 +22,7 @@ export class Basement extends StageObject {
   get texture(): string {
     return this.health > 0
       ? `<span class="mdi mdi-home" style="color: #3f51b5"></span>`
-      : `<span class="mdi mdi-home-flood" color="color: #9da6b7"></span>`
+      : `<span class="mdi mdi-home-flood" color="color: #3f51b5"></span>`
   }
 
   get indicator(): HTMLElement {

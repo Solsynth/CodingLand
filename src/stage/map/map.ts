@@ -1,10 +1,10 @@
 import { StageObject, Vector } from "../object"
-import { ResourcePoint } from "./resource"
+import { ResourcePoint } from "../unit/resource"
 import { MapChunk } from "./chunk"
-import { Entrance } from "./entrance"
-import { Basement } from "./basement"
+import { Entrance } from "../unit/entrance"
+import { Basement } from "../unit/basement"
 import { DirectAttacker } from "../entity/direct"
-import { Wall } from "./wall"
+import { Wall } from "../unit/wall"
 import { Entity } from "../entity/entity"
 
 export class Map extends StageObject {

@@ -1,9 +1,9 @@
 import { Entity, type LookupResult } from "./entity"
 import { Map } from "../map/map"
-import { BasementPosition } from "../map/basement"
+import { BasementPosition } from "../unit/basement"
 
 // TODO Cleanup cache when map layout change
-let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
+const lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
 /**
  * Direct Attacker
@@ -13,7 +13,7 @@ let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
  * Party: Hostile
  */
 export class DirectAttacker extends Entity {
-  public type = "codingland.entities.enemy"
+  public type = "codingland.entities.enemies.direct_attacker"
 
   public damage = 20.0
 

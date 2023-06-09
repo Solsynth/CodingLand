@@ -15,7 +15,7 @@ export class InventorySlot {
 export class Inventory {
   private static instance: Inventory
 
-  public recent: { [id: string]: { negative: boolean; value: string } } = {}
+  public recent: { [id: string]: { negative: boolean; value: number } } = {}
   public warehouse: InventorySlot[] = []
 
   constructor() {
@@ -54,7 +54,7 @@ export class Inventory {
     if (clean) this.cleanup()
 
     // Record into recent
-    this.recent[item.id] = { negative: false, value: `+${item.amount}` }
+    this.recent[item.id] = { negative: false, value: item.amount }
     new StageEventBus().emit("codingland.inventory.refresh", this.recent, this.warehouse)
   }
 
@@ -83,7 +83,7 @@ export class Inventory {
     }
 
     // Record into recent
-    this.recent[id] = { negative: true, value: `-${count}` }
+    this.recent[id] = { negative: true, value: count }
     new StageEventBus().emit("codingland.inventory.refresh", this.recent, this.warehouse)
   }
 }

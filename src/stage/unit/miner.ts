@@ -1,5 +1,5 @@
 import type { MapChunk } from "../map/chunk"
-import { ResourcePoint } from "../map/resource"
+import { ResourcePoint } from "./resource"
 import { StageObject } from "../object"
 import { Map } from "../map/map"
 import { Inventory, InventorySlot } from "../inventory/inventory"
@@ -14,16 +14,16 @@ import { Inventory, InventorySlot } from "../inventory/inventory"
  * Party: Friendly, Controllable
  */
 export class ResourceMiner extends StageObject {
+  public type = "codingland.buildings.miner"
+  public attributes = {}
   public level = 1
 
   public get valid(): boolean {
     const chunk = this.parent as MapChunk
     if (chunk.children.length < 2) {
       return false
-    } else if (!(chunk.children[0] instanceof ResourcePoint)) {
-      return false
     } else {
-      return true
+      return chunk.children[0] instanceof ResourcePoint
     }
   }
 
@@ -42,6 +42,7 @@ export class ResourceMiner extends StageObject {
   }
 
   private countdown = 30
+
   private get maxCountdown(): number {
     // Every level reduce 1 tick countdown
     return 30 - Math.min(Math.max((this.level - 1) * 1, 0), 25)
@@ -63,7 +64,7 @@ export class ResourceMiner extends StageObject {
       this.element.style.fontSize = "16px"
       this.element.style.padding = "0 6.75px"
       this.element.innerHTML = `<span class="mdi mdi-pickaxe"></span>`
-      if(!this.valid) {
+      if (!this.valid) {
         this.element.style.color = "#f44336"
       }
     }

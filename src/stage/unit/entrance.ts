@@ -1,9 +1,10 @@
 import { CLOCK_RATE } from "../engine"
 import { StageObject, Vector } from "../object"
-import { Map } from "./map"
+import { Map } from "../map/map"
 
 export class Entrance extends StageObject {
   public type = "codingland.buildings.entrance"
+  public attributes = {}
 
   constructor(chunk: HTMLElement) {
     super()

@@ -1,4 +1,13 @@
 import { StageEventBus } from "./eventbus"
+import { ResourceMiner } from "@/stage/unit/miner"
+
+export interface StagePopupOptions {
+  icon?: string,
+  title: string,
+  subtitle: string,
+  caller: StageObject,
+  callbacks: { [id: string]: () => void }
+}
 
 export class StageQueue<T> {
   private elements: T[]
@@ -22,7 +31,7 @@ export class StageQueue<T> {
 }
 
 export class Vector {
-  public static Null = new Vector() 
+  public static Null = new Vector()
   public static Zero = new Vector(0, 0)
 
   public x?: number
@@ -42,7 +51,7 @@ export class Vector {
     const y = Math.floor(Math.random() * (maxY - 1 - minY + 1) + minY)
     return new Vector(x, y)
   }
-  
+
   isEmpty(): boolean {
     return this.x == null || this.y == null
   }
@@ -153,6 +162,15 @@ export class StageObject {
 
   mountElement(target?: HTMLElement) {
     if (this.element) {
+      this.element.addEventListener("contextmenu", (e: Event) => {
+        const args = this.renderActions()
+
+        new StageEventBus().emit("codingland.popups.show.actions", args)
+
+        e.stopPropagation()
+        e.preventDefault()
+      })
+
       const element = target ?? document.getElementById("sgt-stage")
       element?.appendChild(this.element)
     }
@@ -173,7 +191,7 @@ export class StageObject {
   }
 
   dispose() {
-    if(this.element) {
+    if (this.element) {
       this.element.style.opacity = "0"
       setTimeout(() => this.unmountElement(), 1000)
     }
@@ -183,9 +201,22 @@ export class StageObject {
     }
   }
 
-  mount() {}
+  renderActions(): StagePopupOptions {
+    return {
+      icon: `<span class="mdi mdi-help-rhombus"></span>`,
+      title: "Object",
+      subtitle: `#${this.id.replace("sgt-object", "").replace(/-/g, "").substring(0, 12)}`,
+      caller: this,
+      callbacks: {}
+    }
+  }
 
-  render() {}
+  mount() {
+  }
 
-  update() {}
+  render() {
+  }
+
+  update() {
+  }
 }

@@ -1,4 +1,4 @@
-import { Map } from "./map"
+import { Map } from "../map/map"
 import { StageObject } from "../object"
 
 export class Wall extends StageObject {
