@@ -3,6 +3,7 @@ import { Map } from "./map"
 import { Wall } from "@/stage/unit/wall"
 import { Inventory } from "@/stage/inventory/inventory"
 import { useSnackbar } from "@/stores/snackbar"
+import { Defender } from "@/stage/unit/defender"
 
 export class MapChunk extends StageObject {
   public type = "codingland.maps.chunk"
@@ -31,6 +32,17 @@ export class MapChunk extends StageObject {
           } else {
             useSnackbar().show({
               text: `Could not build wall at ${this.position.toString()}, not enough resources.`,
+              color: "error"
+            })
+          }
+        },
+        "build.defender": () => {
+          if (new Inventory().delItem("codingland.wood", 2)) {
+            this.setChild(0, new Defender(this.element as HTMLElement))
+            console.debug(`[Actions] Successfully build a defender at ${this.position.toString()}!`)
+          } else {
+            useSnackbar().show({
+              text: `Could not build defender at ${this.position.toString()}, not enough resources.`,
               color: "error"
             })
           }

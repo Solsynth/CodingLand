@@ -4,7 +4,7 @@ import { MapChunk } from "@/stage/map/chunk"
 
 export class Wall extends StageObject {
   public type = "codingland.buildings.wall"
-  public attributes = { passable: false }
+  public attributes = { party: "player", passable: false }
   public level = 1
 
   public health: number

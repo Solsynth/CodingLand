@@ -17,13 +17,17 @@ class LookupTask {
 export class Entity extends StageObject {
   public type = "codingland.entity"
 
+  public health: number
+  public maxHealth = 100
+
   public scale: number = 0.5
 
   constructor(map: HTMLElement) {
     super()
+    this.health = this.maxHealth
     this.visible = true
-    this.mountElement(map)
     this.element?.classList.add("sgt-entity")
+    this.mountElement(map)
   }
 
   async lookupPath(to: Vector): Promise<LookupResult> {
@@ -136,6 +140,12 @@ export class Entity extends StageObject {
       this.element.style.backgroundColor = "#009688"
       this.element.style.boxShadow =
         "0 3px 1px -2px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, .2)),0 2px 2px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, .14)),0 1px 5px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, .12))"
+    }
+  }
+
+  update() {
+    if(!this.attributes?.invincible && this.health <= 0) {
+      this.dispose()
     }
   }
 }

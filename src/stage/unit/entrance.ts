@@ -4,7 +4,7 @@ import { Map } from "../map/map"
 
 export class Entrance extends StageObject {
   public type = "codingland.buildings.entrance"
-  public attributes = {}
+  public attributes = { party: "enemy", unbreakable: true }
 
   constructor(chunk: HTMLElement) {
     super()

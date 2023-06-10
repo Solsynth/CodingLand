@@ -7,7 +7,7 @@ export let BasePosition: Vector
 
 export class Base extends StageObject {
   public type = "codingland.buildings.base"
-  public attributes = {}
+  public attributes = { party: "player" }
 
   public health: number
   public maxHealth = 100

@@ -101,10 +101,18 @@ export class Vector {
 }
 
 export class Direction {
+  // [Up Left]        [Up]        [Up Right]
+  public static UpLeft = new Vector(-1, -1)
   public static Up = new Vector(0, -1)
-  public static Right = new Vector(1, 0)
+  public static UpRight = new Vector(1, -1)
+  // [Left]         [Center]         [Right]
   public static Left = new Vector(-1, 0)
+  public static Center = new Vector(0, 0)
+  public static Right = new Vector(1, 0)
+  // [Down Left]     [Down]     [Down Right]
+  public static DownLeft = new Vector(-1, 1)
   public static Down = new Vector(0, 1)
+  public static DownRight = new Vector(1, 1)
 }
 
 export class StageObject {
@@ -163,6 +171,7 @@ export class StageObject {
 
   mountElement(target?: HTMLElement) {
     if (this.element) {
+      this.element.classList.add("sgt-object")
       this.element.addEventListener("contextmenu", (e: Event) => {
         const args = this.renderActions()
 

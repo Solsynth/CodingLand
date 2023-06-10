@@ -1,0 +1,45 @@
+#sgt-stage {
+    position: relative;
+}
+
+#sgt-map-wrapper {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    left: 0;
+    top: 0;
+}
+
+.sgt-map {
+    background-color: #ffffff;
+}
+
+.sgt-widget {
+    font-family: "Roboto Mono", monospace;
+    font-size: 12px;
+}
+
+.sgt-object {
+    transition: all 0.1s;
+}
+
+/* Under attack red mask - for entity */
+.sgt-entity::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    background-color: red;
+    transition: all .25s;
+}
+
+.sgt-entity[under-attack-mask]::before {
+    opacity: 50%;
+}

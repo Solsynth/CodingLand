@@ -95,6 +95,7 @@ import { useStage } from "@/stores/stage"
 import { Map } from "@/stage/map/map"
 import type { StagePopupOptions } from "@/stage/object"
 import { useRouter } from "vue-router"
+import "@/assets/style/stage.css"
 
 const recent = ref<{ [id: string]: { negative: boolean; value: string } }>({})
 const inventory = ref<any>([])
@@ -142,7 +143,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* CodingLand HUD & Others requirements css */
 .card-bottom .v-overlay__content {
   bottom: 0;
   margin-bottom: 0;
@@ -171,37 +171,5 @@ onUnmounted(() => {
   position: absolute;
   bottom: 12px;
   left: 12px;
-}
-
-/* Stage.js requirement css */
-#sgt-stage {
-  position: relative;
-}
-
-#sgt-map-wrapper {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  place-items: center;
-  left: 0;
-  top: 0;
-}
-
-.sgt-map {
-  background-color: #ffffff;
-}
-
-.sgt-widget {
-  font-family: "Roboto Mono", monospace;
-  font-size: 12px;
-}
-
-.sgt-entity {
-  transition: all 0.1s;
-}
-
-.bottom-popup {
-  bottom: 0;
-  left: 0;
 }
 </style>

@@ -6,20 +6,23 @@ let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
 /**
  * Direct Attacker
- * 
+ *
  * Behaviour: Run into the base, won't attack others.
- * 
+ *
  * Party: Hostile
  */
 export class DirectAttacker extends Entity {
   public type = "codingland.entities.enemies.direct_attacker"
+  public attributes = { party: "enemy" }
 
   public damage = 20.0
+  public maxHealth = 10.0
 
   private ready = false
 
   constructor(map: HTMLElement) {
     super(map)
+    this.health = this.maxHealth
     this.element?.classList.add("sgt-entity-enemy")
   }
 
@@ -33,7 +36,7 @@ export class DirectAttacker extends Entity {
   mount() {
     // Cleanup cache when layout change
     this.addEventListener("codingland.maps.layouts.update", () => {
-      if(Object.entries(lookupCache).length > 0) {
+      if (Object.entries(lookupCache).length > 0) {
         lookupCache = {}
       }
     })
@@ -55,6 +58,7 @@ export class DirectAttacker extends Entity {
   }
 
   update() {
+    super.update()
     if (this.moveCountdown > 0) {
       if (!this.ready) {
         this.locate().then((success) => (this.ready = success))

@@ -1,6 +1,6 @@
 import type { MapChunk } from "../map/chunk"
 import { ResourcePoint } from "./resource"
-import { StageObject, StagePopupOptions } from "../object"
+import { StageObject, type StagePopupOptions } from "../object"
 import { Map } from "../map/map"
 import { Inventory, InventorySlot } from "../inventory/inventory"
 
@@ -15,7 +15,7 @@ import { Inventory, InventorySlot } from "../inventory/inventory"
  */
 export class ResourceMiner extends StageObject {
   public type = "codingland.buildings.miner"
-  public attributes = {}
+  public attributes = { party: "player" }
   public level = 1
 
   constructor(chunk: HTMLElement) {
@@ -81,12 +81,11 @@ export class ResourceMiner extends StageObject {
     if (this.element) {
       this.element.style.position = "absolute"
       this.element.style.bottom = "0"
-      this.element.style.left = "0"
-      this.element.style.width = `${Map.chunkSize}px`
+      this.element.style.right = "4px"
+      this.element.style.width = `16px`
       this.element.style.textAlign = "right"
       this.element.style.fontSize = "16px"
-      this.element.style.padding = "0 6.75px"
-      this.element.innerHTML = `<span class="mdi mdi-pickaxe"></span>`
+      this.element.innerHTML = this.texture
       if (!this.valid) {
         this.element.style.color = "#f44336"
       }

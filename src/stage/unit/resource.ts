@@ -5,7 +5,7 @@ import type { MapChunk } from "@/stage/map/chunk"
 
 export class ResourcePoint extends StageObject {
   public type = "codingland.environments.resource"
-  public attributes = {}
+  public attributes = { party: "nature" }
 
   public resource: string
 
