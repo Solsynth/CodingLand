@@ -1,5 +1,7 @@
 import { Map } from "../map/map"
-import { StageObject } from "../object"
+import { StageObject, StagePopupOptions } from "../object"
+import { ResourceMiner } from "@/stage/unit/miner"
+import type { MapChunk } from "@/stage/map/chunk"
 
 export class ResourcePoint extends StageObject {
   public type = "codingland.environments.resource"
@@ -20,6 +22,25 @@ export class ResourcePoint extends StageObject {
         return `<span class="mdi mdi-pine-tree-variant"></span>`
       default:
         return `<span class="mdi mdi-help-rhombus-outline"></span>`
+    }
+  }
+
+  renderActions(): StagePopupOptions {
+    const chunk = this.parent as MapChunk
+
+    return {
+      icon: this.texture,
+      title: "Resource Point",
+      content: () => import("@/components/actions/resource.vue"),
+      subtitle: this.resource,
+      caller: this,
+      attributes: { established: chunk.children[1] instanceof ResourceMiner },
+      callbacks: {
+        "mine": () => {
+          chunk.setChild(1, new ResourceMiner(chunk.element as HTMLElement))
+          console.debug(`[Actions] Successfully deployed resource miner at ${chunk.position.toString()}!`)
+        }
+      }
     }
   }
 

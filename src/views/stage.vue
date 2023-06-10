@@ -40,10 +40,10 @@
       </v-row>
     </div>
 
-    <v-navigation-drawer v-model="actions.display" :scrim="false" temporary width="300" location="right"
+    <v-navigation-drawer v-model="actions.display" :scrim="false" temporary width="340" location="right"
                          class="sgt-widget">
       <template #prepend>
-        <v-list-item lines="two" :title="actions.opts.title" :subtitle="actions.opts.subtitle">
+        <v-list-item lines="two" :title="actions.opts.title" :subtitle="actions.opts.subtitle" class="border-b">
           <template #prepend>
             <v-avatar style="font-size: 24px">
               <div v-html="actions.opts.icon" />
@@ -52,11 +52,13 @@
         </v-list-item>
       </template>
 
+      <component v-if="actions.content" :is="actions.content" v-bind="actions.opts" @close="actions.display = false" />
+
       <template #append>
         <v-list-item lines="one" title="Close" class="border-t" @click="actions.display = false">
           <template #prepend>
             <v-avatar>
-              <v-icon style="font-size: 24px" color="red" icon="mdi-logout-variant" />
+              <v-icon style="font-size: 24px" color="red" icon="mdi-close" />
             </v-avatar>
           </template>
         </v-list-item>
@@ -75,7 +77,7 @@ import { useRouter } from "vue-router"
 const recent = ref<{ [id: string]: { negative: boolean; value: string } }>({})
 const inventory = ref<any>([])
 
-const actions = reactive<any>({ display: false, opts: {} })
+const actions = reactive<any>({ display: false, content: null, opts: {} })
 
 const $stage = useStage()
 const $router = useRouter()
@@ -96,7 +98,8 @@ onMounted(() => {
       recent.value = v
     })
 
-    $stage.eventbus.addListener("codingland.popups.show.actions", (opts: StagePopupOptions) => {
+    $stage.eventbus.addListener("codingland.popups.show.actions", async (opts: StagePopupOptions) => {
+      actions.content = opts.content ? (await opts.content()).default : null
       actions.opts = opts
       actions.display = true
     })

@@ -1,11 +1,12 @@
 import { StageEventBus } from "./eventbus"
-import { ResourceMiner } from "@/stage/unit/miner"
 
 export interface StagePopupOptions {
   icon?: string,
   title: string,
   subtitle: string,
+  content?: any,
   caller: StageObject,
+  attributes?: any,
   callbacks: { [id: string]: () => void }
 }
 

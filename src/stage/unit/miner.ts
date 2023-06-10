@@ -1,6 +1,6 @@
 import type { MapChunk } from "../map/chunk"
 import { ResourcePoint } from "./resource"
-import { StageObject } from "../object"
+import { StageObject, StagePopupOptions } from "../object"
 import { Map } from "../map/map"
 import { Inventory, InventorySlot } from "../inventory/inventory"
 
@@ -17,6 +17,12 @@ export class ResourceMiner extends StageObject {
   public type = "codingland.buildings.miner"
   public attributes = {}
   public level = 1
+
+  constructor(chunk: HTMLElement) {
+    super()
+    this.visible = true
+    this.mountElement(chunk)
+  }
 
   public get valid(): boolean {
     const chunk = this.parent as MapChunk
@@ -43,15 +49,32 @@ export class ResourceMiner extends StageObject {
 
   private countdown = 30
 
-  private get maxCountdown(): number {
+  public get maxCountdown(): number {
     // Every level reduce 1 tick countdown
     return 30 - Math.min(Math.max((this.level - 1) * 1, 0), 25)
   }
 
-  constructor(chunk: HTMLElement) {
-    super()
-    this.visible = true
-    this.mountElement(chunk)
+  get texture(): string {
+    return `<span class="mdi mdi-pickaxe"></span>`
+  }
+
+  renderActions(): StagePopupOptions {
+    const chunk = this.parent as MapChunk
+
+    return {
+      icon: this.texture,
+      title: "Resource Miner",
+      content: () => import("@/components/actions/miner.vue"),
+      subtitle: `Level ${this.level}`,
+      caller: this,
+      attributes: { established: chunk.children[1] instanceof ResourceMiner },
+      callbacks: {
+        "destroy": () => {
+          this.dispose()
+          console.debug(`[Actions] Successfully destroy resource miner at ${chunk.position.toString()}!`)
+        }
+      }
+    }
   }
 
   render() {
