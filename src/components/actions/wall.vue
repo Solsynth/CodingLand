@@ -1,9 +1,14 @@
 <template>
   <div>
+    <v-list density="compact" class="flat-actions-list" lines="two">
+      <v-list-subheader>STATUS</v-list-subheader>
+      <v-list-item prepend-icon="mdi-heart" title="Health"
+                   :subtitle="`${(props.caller as any).health}/${(props.caller as any).maxHealth}`" />
+    </v-list>
     <v-list density="compact" class="flat-actions-list">
       <v-list-subheader>ACTIONS</v-list-subheader>
-      <v-list-item prepend-icon="mdi-pickaxe" title="Deploy Resource Miner" subtitle="Collect resources from this"
-                   :disabled="props.attributes['established']" @click="triggerCallback('mine')" />
+      <v-list-item prepend-icon="mdi-close" title="Destroy" subtitle="Destroy itself"
+                   @click="triggerCallback('destroy')" />
     </v-list>
   </div>
 </template>

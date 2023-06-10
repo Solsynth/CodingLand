@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import Snackbar from "@/components/global/snackbar.vue";
+import Snackbar from "@/components/global/snackbar.vue"
 </script>
 
 <style>
@@ -39,13 +39,13 @@ import Snackbar from "@/components/global/snackbar.vue";
   z-index: 1;
 }
 
-.splitpanes--vertical>.splitpanes__splitter:before {
+.splitpanes--vertical > .splitpanes__splitter:before {
   left: -5px;
   right: -5px;
   height: 100%;
 }
 
-.splitpanes--horizontal>.splitpanes__splitter:before {
+.splitpanes--horizontal > .splitpanes__splitter:before {
   top: -5px;
   bottom: -5px;
   width: 100%;

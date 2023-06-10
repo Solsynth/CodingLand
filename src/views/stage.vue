@@ -4,8 +4,30 @@
       <div id="sgt-map-wrapper" class="fit-width fit-height"></div>
     </div>
 
-    <div class="sgt-console sgt-widget sgt-console-inventory">
-      <v-row dense>
+    <div class="mission sgt-widget">
+      <v-row dense style="width: 340px">
+        <v-col :cols="12">
+          <v-card>
+            <v-card-text>
+              <div><b>Objective</b></div>
+              <div style="font-size: 10px">
+                <ul>
+                  <li>
+                    <del>Establish a connection with CoNet</del>
+                  </li>
+                  <li>
+                    <b>Protect the base until backup arrives</b>
+                  </li>
+                </ul>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+
+    <div class="inventory sgt-widget">
+      <v-row dense style="width: 340px">
         <v-col :cols="12">
           <v-card>
             <v-card-text>
@@ -41,7 +63,7 @@
     </div>
 
     <v-navigation-drawer v-model="actions.display" :scrim="false" temporary width="340" location="right"
-                         class="sgt-widget">
+                         class="sgt-widget elevation-2">
       <template #prepend>
         <v-list-item lines="two" :title="actions.opts.title" :subtitle="actions.opts.subtitle" class="border-b">
           <template #prepend>
@@ -137,6 +159,20 @@ onUnmounted(() => {
   text-transform: unset;
 }
 
+.mission {
+  min-width: 280px;
+  position: absolute;
+  top: calc(12px + 64px);
+  left: 12px;
+}
+
+.inventory {
+  min-width: 280px;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+}
+
 /* Stage.js requirement css */
 #sgt-stage {
   position: relative;
@@ -151,16 +187,13 @@ onUnmounted(() => {
   top: 0;
 }
 
+.sgt-map {
+  background-color: #ffffff;
+}
+
 .sgt-widget {
   font-family: "Roboto Mono", monospace;
   font-size: 12px;
-}
-
-.sgt-console {
-  min-width: 280px;
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
 }
 
 .sgt-entity {

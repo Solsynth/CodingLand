@@ -7,7 +7,7 @@ import { useUserInterface } from '../stores/ui';
       <v-toolbar-title>{{ $interface.title }}</v-toolbar-title>
     </v-app-bar>
 
-    <v-main>
+    <v-main class="bg-grey-lighten-3">
       <router-view />
     </v-main>
   </v-app>

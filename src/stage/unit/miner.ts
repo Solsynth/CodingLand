@@ -71,7 +71,7 @@ export class ResourceMiner extends StageObject {
       callbacks: {
         "destroy": () => {
           this.dispose()
-          console.debug(`[Actions] Successfully destroy resource miner at ${chunk.position.toString()}!`)
+          console.debug(`[Actions] Successfully destroy a resource miner at ${chunk.position.toString()}!`)
         }
       }
     }

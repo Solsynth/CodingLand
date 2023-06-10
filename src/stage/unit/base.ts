@@ -3,10 +3,10 @@ import { StageObject, Vector } from "../object"
 import type { MapChunk } from "../map/chunk"
 import { Map } from "../map/map"
 
-export let BasementPosition: Vector
+export let BasePosition: Vector
 
-export class Basement extends StageObject {
-  public type = "codingland.buildings.basement"
+export class Base extends StageObject {
+  public type = "codingland.buildings.base"
   public attributes = {}
 
   public health: number
@@ -34,23 +34,23 @@ export class Basement extends StageObject {
     element.style.textAlign = "center"
     element.style.fontSize = "12px"
     element.style.fontFamily = "'Roboto Mono', monospace"
-    element.className = "sgt-basement-healthbar"
+    element.className = "sgt-base-healthbar"
     element.innerText = `${this.health.toPrecision(3)}%`
     return element
   }
 
   mount() {
-    BasementPosition = (this.parent as MapChunk).position
+    BasePosition = (this.parent as MapChunk).position
   }
 
   update() {
     const enemies = (this.parent?.parent as Map).getEntities((this.parent as MapChunk).position)
     for (let enemy of enemies) {
-      // Enemy enter the basement
+      // Enemy enter the base
       if (enemy instanceof DirectAttacker) {
         enemy.dispose()
         this.health -= enemy.damage
-        this.emitEvent("codingland.damage.basement", this.health, enemy.id)
+        this.emitEvent("codingland.damage.base", this.health, enemy.id)
       }
     }
   }

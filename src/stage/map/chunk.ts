@@ -1,6 +1,8 @@
 import { StageObject, type StagePopupOptions, Vector } from "../object"
 import { Map } from "./map"
-import { ResourceMiner } from "@/stage/unit/miner"
+import { Wall } from "@/stage/unit/wall"
+import { Inventory } from "@/stage/inventory/inventory"
+import { useSnackbar } from "@/stores/snackbar"
 
 export class MapChunk extends StageObject {
   public type = "codingland.maps.chunk"
@@ -18,9 +20,21 @@ export class MapChunk extends StageObject {
       icon: (this.children[0] as any)?.texture ?? `<span class="mdi mdi-help-rhombus"></span>`,
       title: (this.children[0] as any)?.attributes.name ?? "Area",
       subtitle: `At ${this.position.toString()}`,
+      content: () => import("@/components/actions/area.vue"),
       caller: this,
+      attributes: { buildable: this.children[0] == null },
       callbacks: {
-        "build.miner": () => this.setChild(1, new ResourceMiner(this.element as HTMLElement))
+        "build.wall": () => {
+          if (new Inventory().delItem("codingland.wood", 20)) {
+            this.setChild(0, new Wall(this.element as HTMLElement))
+            console.debug(`[Actions] Successfully build a wall at ${this.position.toString()}!`)
+          } else {
+            useSnackbar().show({
+              text: `Could not build wall at ${this.position.toString()}, not enough resources.`,
+              color: "error"
+            })
+          }
+        }
       }
     }
   }

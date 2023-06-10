@@ -58,7 +58,7 @@ export class Inventory {
     new StageEventBus().emit("codingland.inventory.refresh", this.recent, this.warehouse)
   }
 
-  delItem(id: string, amount?: number) {
+  delItem(id: string, amount?: number): boolean {
     let finish = false
     let count = 0
     if (!amount) {
@@ -74,9 +74,11 @@ export class Inventory {
     } else {
       this.warehouse = this.warehouse.map((slot) => {
         if (slot.id === id && !finish) {
-          slot.amount -= amount
-          count = amount
-          finish = true
+          if(slot.amount > amount) {
+            slot.amount -= amount
+            count = amount
+            finish = true
+          }
         }
         return slot
       })
@@ -85,5 +87,7 @@ export class Inventory {
     // Record into recent
     this.recent[id] = { negative: true, value: count }
     new StageEventBus().emit("codingland.inventory.refresh", this.recent, this.warehouse)
+
+    return finish
   }
 }

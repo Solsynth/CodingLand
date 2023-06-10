@@ -1,14 +1,13 @@
 import { Entity, type LookupResult } from "./entity"
 import { Map } from "../map/map"
-import { BasementPosition } from "../unit/basement"
+import { BasePosition } from "../unit/base"
 
-// TODO Cleanup cache when map layout change
-const lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
+let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
 /**
  * Direct Attacker
  * 
- * Behaviour: Run into the basement, won't attack others.
+ * Behaviour: Run into the base, won't attack others.
  * 
  * Party: Hostile
  */
@@ -31,6 +30,15 @@ export class DirectAttacker extends Entity {
   private moveCountdown = 20
   private maxMoveCountdown = 20
 
+  mount() {
+    // Cleanup cache when layout change
+    this.addEventListener("codingland.maps.layouts.update", () => {
+      if(Object.entries(lookupCache).length > 0) {
+        lookupCache = {}
+      }
+    })
+  }
+
   async locate(): Promise<boolean> {
     const pos = this.position.floor()
     if (pos.x && lookupCache[pos.x] == null) {
@@ -40,7 +48,7 @@ export class DirectAttacker extends Entity {
       return true
     }
 
-    const next = await this.lookupPath(BasementPosition)
+    const next = await this.lookupPath(BasePosition)
     if (pos.x && pos.y) lookupCache[pos.x][pos.y] = next // Update cache
     this.direction = next.nextDirection
     return next.success

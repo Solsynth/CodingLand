@@ -2,7 +2,7 @@ import { StageObject, Vector } from "../object"
 import { ResourcePoint } from "../unit/resource"
 import { MapChunk } from "./chunk"
 import { Entrance } from "../unit/entrance"
-import { Basement } from "../unit/basement"
+import { Base } from "../unit/base"
 import { DirectAttacker } from "../entity/direct"
 import { Wall } from "../unit/wall"
 import { Entity } from "../entity/entity"
@@ -52,10 +52,10 @@ export class Map extends StageObject {
     // Append additional components
     const additional = {
       entrance: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y)),
-      basement: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y))
+      base: this.getChunk(Vector.rangeRandom(0, this.size.x, 0, this.size.y))
     }
     additional.entrance.setChild(0, new Entrance(additional.entrance.element as HTMLElement))
-    additional.basement.setChild(0, new Basement(additional.basement.element as HTMLElement))
+    additional.base.setChild(0, new Base(additional.base.element as HTMLElement))
 
     console.log(`[Map Creator] Finish map chunk initialization, total created ${total} chunks.`)
   }
