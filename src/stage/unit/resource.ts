@@ -1,9 +1,10 @@
 import { Map } from "../map/map"
-import { StageObject, StagePopupOptions } from "../object"
-import { ResourceMiner } from "@/stage/unit/miner"
-import type { MapChunk } from "@/stage/map/chunk"
+import { type StagePopupOptions } from "../object"
+import { ResourceMiner } from "../unit/miner"
+import type { MapChunk } from "../map/chunk"
+import { Unit } from "./unit"
 
-export class ResourcePoint extends StageObject {
+export class ResourcePoint extends Unit {
   public type = "codingland.environments.resource"
   public attributes = { party: "nature" }
 
@@ -38,7 +39,11 @@ export class ResourcePoint extends StageObject {
       callbacks: {
         "mine": () => {
           chunk.setChild(1, new ResourceMiner(chunk.element as HTMLElement))
-          console.debug(`[Actions] Successfully deployed resource miner at ${chunk.position.toString()}!`)
+          console.debug(`[Actions] Successfully deployed a resource miner at ${chunk.position.toString()}!`)
+        },
+        "clean": () => {
+          this.dispose()
+          console.debug(`[Actions] Successfully cleaned a resource point at ${chunk.position.toString()}!`)
         }
       }
     }

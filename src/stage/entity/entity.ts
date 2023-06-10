@@ -14,6 +14,12 @@ class LookupTask {
   }
 }
 
+/**
+ * CodingLand Entity Base Class.
+ * Easy to build an entity by extend it then mount under the map object.
+ *
+ * Based by Stage.js StageObject class
+ */
 export class Entity extends StageObject {
   public type = "codingland.entity"
 
@@ -30,7 +36,7 @@ export class Entity extends StageObject {
     this.mountElement(map)
   }
 
-  async lookupPath(to: Vector): Promise<LookupResult> {
+  async lookupPath(...to: Vector[]): Promise<LookupResult> {
     const from = this.position.clone()
     const map = this.parent as Map
 
@@ -45,7 +51,7 @@ export class Entity extends StageObject {
     // Breadth-first Algorithm
     function search(): LookupResult {
       const pin = tasks.shift()
-      if (pin.position.floor().equals(to)) {
+      if (to.filter(p => pin.position.floor().equals(p)).length > 0) {
         let history: LookupTask[] = [pin]
         let pointer = pin.parent
 
@@ -77,7 +83,7 @@ export class Entity extends StageObject {
       }
 
       step++
-      for (let choice of choices) {
+      for (const choice of choices) {
         const pos = pin.position.add(choice).floor()
         const chunk = map.getChunk(pos)
         if (chunk == null || chunk.children[0]?.attributes?.passable === false) {
@@ -113,7 +119,7 @@ export class Entity extends StageObject {
     const target = this.position.add(direction)
     const targetChunk = (this.parent as Map).getChunk(target)
     // Detect target place is passable
-    // If could not get target chunk details, means that place is out of map.
+    // If we could not get target chunk details, means that place is out of map.
     if (targetChunk != null && targetChunk.children[0]?.attributes?.passable !== false) {
       this.position = target
       return true
@@ -123,6 +129,17 @@ export class Entity extends StageObject {
       this.position = this.position.add(value)
       setTimeout(() => (this.position = this.position.subtract(value)), 50)
       return false
+    }
+  }
+
+  takeDamage(damage: number) {
+    this.health -= damage
+    if (this.element) {
+      if (this.element.hasAttribute("under-attack-mask")) {
+        clearTimeout(parseInt(this.element.getAttribute("under-attack-mask") as string))
+      }
+      const cleaner = setTimeout(() => this.element?.removeAttribute("under-attack-mask"), 250)
+      this.element.setAttribute("under-attack-mask", cleaner.toString())
     }
   }
 

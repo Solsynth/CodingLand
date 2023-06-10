@@ -2,7 +2,7 @@
   <div>
     <v-list density="compact" class="sgt-inspector" lines="two">
       <v-list-subheader>STATUS</v-list-subheader>
-      <v-list-item prepend-icon="mdi-gold" title="Output" :subtitle="output" />
+      <v-list-item prepend-icon="mdi-bow-arrow" title="Damage" :subtitle="`${(props.caller as any).damage} Points`" />
     </v-list>
     <v-list density="compact" class="sgt-inspector">
       <v-list-subheader>ACTIONS</v-list-subheader>
@@ -19,11 +19,6 @@ import { computed } from "vue"
 
 const props = defineProps<StagePopupOptions>()
 const emits = defineEmits(["close"])
-
-const output = computed(() => {
-  const caller = props.caller as ResourceMiner
-  return `${caller.outputCount} ${caller.product}/${caller.maxCountdown} ticks`
-})
 
 function triggerCallback(id: string) {
   props.callbacks[id]()

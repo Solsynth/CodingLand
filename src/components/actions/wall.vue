@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-list density="compact" class="flat-actions-list" lines="two">
+    <v-list density="compact" class="sgt-inspector" lines="two">
       <v-list-subheader>STATUS</v-list-subheader>
       <v-list-item prepend-icon="mdi-heart" title="Health"
                    :subtitle="`${(props.caller as any).health}/${(props.caller as any).maxHealth}`" />
     </v-list>
-    <v-list density="compact" class="flat-actions-list">
+    <v-list density="compact" class="sgt-inspector">
       <v-list-subheader>ACTIONS</v-list-subheader>
       <v-list-item prepend-icon="mdi-close" title="Destroy" subtitle="Destroy itself"
                    @click="triggerCallback('destroy')" />
@@ -24,10 +24,3 @@ function triggerCallback(id: string) {
   emits("close")
 }
 </script>
-
-<style scoped>
-.flat-actions-list .v-list-item {
-  padding-bottom: 8px !important;
-  padding-top: 8px !important;
-}
-</style>

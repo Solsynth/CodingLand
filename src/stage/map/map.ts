@@ -3,9 +3,10 @@ import { ResourcePoint } from "../unit/resource"
 import { MapChunk } from "./chunk"
 import { Entrance } from "../unit/entrance"
 import { Base } from "../unit/base"
-import { DirectAttacker } from "../entity/direct"
+import { EnemyDirectAttacker } from "../entity/direct"
 import { Wall } from "../unit/wall"
 import { Entity } from "../entity/entity"
+import { EnemyEngineer } from "@/stage/entity/engineer"
 
 export class Map extends StageObject {
   public type = "codingland.map"
@@ -24,9 +25,15 @@ export class Map extends StageObject {
 
     // Add signal listener
     this.addEventListener("codingland.spawn.enemy", (pos: Vector) => {
-      const mob = new DirectAttacker(this.element as HTMLElement)
-      mob.position = pos
-      this.addChild(mob)
+      let entity: Entity
+      if(Math.random() > 0.6) {
+        entity = new EnemyDirectAttacker(this.element as HTMLElement)
+      } else {
+        entity = new EnemyEngineer(this.element as HTMLElement)
+      }
+
+      entity.position = pos
+      this.addChild(entity)
     })
 
     // Follow size to create chunks
@@ -58,6 +65,19 @@ export class Map extends StageObject {
     additional.base.setChild(0, new Base(additional.base.element as HTMLElement))
 
     console.log(`[Map Creator] Finish map chunk initialization, total created ${total} chunks.`)
+  }
+
+  lookupChunk(condition: (chunk: MapChunk) => boolean): MapChunk[] {
+    const result: MapChunk[] = []
+    for (let x = 0; x < (this.size.x ?? 8); x++) {
+      for (let y = 0; y < (this.size.y ?? 5); y++) {
+        const chunk = this.getChunk(new Vector(x, y))
+        if(chunk && condition(chunk)) {
+          result.push(chunk)
+        }
+      }
+    }
+    return result
   }
 
   getChunk(position: Vector): MapChunk {

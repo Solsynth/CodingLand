@@ -24,8 +24,23 @@
     transition: all 0.1s;
 }
 
+.sgt-engineer-explosion {
+    animation: 850ms ease-in-out sgt-engineer-explosion-animation;
+}
+
+@keyframes sgt-engineer-explosion-animation {
+    0% {
+        transform: scale(1);
+        opacity: 100%;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
 /* Under attack red mask - for entity */
-.sgt-entity::before {
+.sgt-object::before {
     content: "";
     position: absolute;
     top: 0;
@@ -35,11 +50,24 @@
     opacity: 0;
     width: 100%;
     height: 100%;
-    border-radius: 32px;
     background-color: red;
     transition: all .25s;
 }
 
-.sgt-entity[under-attack-mask]::before {
+.sgt-entity::before {
+    border-radius: 32px;
+}
+
+.sgt-object[under-attack-mask]::before {
     opacity: 50%;
+}
+
+/* Inspector HUD */
+.sgt-inspector .v-alert .v-alert__prepend .v-icon {
+    font-size: 20px !important;
+}
+
+.sgt-inspector .v-list-item {
+    padding-bottom: 8px !important;
+    padding-top: 8px !important;
 }

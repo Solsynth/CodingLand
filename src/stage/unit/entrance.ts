@@ -1,8 +1,9 @@
 import { CLOCK_RATE } from "../engine"
-import { StageObject, Vector } from "../object"
+import { Vector } from "../object"
 import { Map } from "../map/map"
+import { Unit } from "./unit"
 
-export class Entrance extends StageObject {
+export class Entrance extends Unit {
   public type = "codingland.buildings.entrance"
   public attributes = { party: "enemy", unbreakable: true }
 
@@ -36,6 +37,7 @@ export class Entrance extends StageObject {
   private delay = 10
 
   update() {
+    super.update()
     if (this.delay <= 0) {
       if (this.countdown > 0) {
         this.countdown--
@@ -44,7 +46,6 @@ export class Entrance extends StageObject {
         spawnLocation.x = (spawnLocation.x ?? 0) + 0.25
         spawnLocation.y = (spawnLocation.y ?? 0) + 0.25
 
-        // TODO Add HUD to display spawner status
         this.emitEvent("codingland.spawn.enemy", spawnLocation)
         this.countdown = this.maxCountdown
         this.delay = 10

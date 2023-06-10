@@ -203,7 +203,7 @@ export class StageObject {
   dispose() {
     if (this.element) {
       this.element.style.opacity = "0"
-      setTimeout(() => this.unmountElement(), 1000)
+      setTimeout(() => this.unmountElement(), 100)
     }
     this.children = []
     if (this.parent) {

@@ -1,9 +1,13 @@
 <template>
   <div>
-    <v-list density="compact" class="flat-actions-list">
+    <v-list density="compact" class="sgt-inspector">
       <v-list-subheader>ACTIONS</v-list-subheader>
-      <v-list-item prepend-icon="mdi-pickaxe" title="Deploy Resource Miner" subtitle="Collect resources from this"
+      <v-alert v-if="props.attributes['established']" :rounded="0" type="warning" density="compact"
+               text="Couldn't execute actions here, it's occupied." />
+      <v-list-item prepend-icon="mdi-pickaxe" title="Build Miner" subtitle="Deploy a resource miner"
                    :disabled="props.attributes['established']" @click="triggerCallback('mine')" />
+      <v-list-item prepend-icon="mdi-broom" title="Clean up" subtitle="Remove this place resources"
+                   :disabled="props.attributes['established']" @click="triggerCallback('clean')" />
     </v-list>
   </div>
 </template>
@@ -19,10 +23,3 @@ function triggerCallback(id: string) {
   emits("close")
 }
 </script>
-
-<style scoped>
-.flat-actions-list .v-list-item {
-  padding-bottom: 8px !important;
-  padding-top: 8px !important;
-}
-</style>

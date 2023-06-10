@@ -1,6 +1,6 @@
-import type { StageEngine } from "@/stage/engine"
-import { StageEventBus } from "@/stage/eventbus"
-import { Inventory } from "@/stage/inventory/inventory"
+import type { StageEngine } from "../stage/engine"
+import { StageEventBus } from "../stage/eventbus"
+import { Inventory } from "../stage/inventory/inventory"
 import { defineStore } from "pinia"
 import { ref } from "vue"
 

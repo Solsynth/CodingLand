@@ -9,15 +9,10 @@
         <v-col :cols="12">
           <v-card>
             <v-card-text>
-              <div><b>Objective</b></div>
+              <div><b>Mission Objective</b></div>
               <div style="font-size: 10px">
                 <ul>
-                  <li>
-                    <del>Establish a connection with CoNet</del>
-                  </li>
-                  <li>
-                    <b>Protect the base until backup arrives</b>
-                  </li>
+                  <li>Protect the base and try you best!</li>
                 </ul>
               </div>
             </v-card-text>
@@ -111,6 +106,15 @@ watch($stage.inventory, (v) => {
 
 onMounted(() => {
   document.body.style.overflow = "hidden"
+
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    switch (e.key) {
+      case "Escape":
+        actions.display = false
+        e.preventDefault()
+        break
+    }
+  })
 
   if ($stage.instance != null) {
     $stage.instance.rootNode.addChild(new Map())

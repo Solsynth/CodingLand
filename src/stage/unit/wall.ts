@@ -1,8 +1,9 @@
 import { Map } from "../map/map"
-import { StageObject, type StagePopupOptions } from "../object"
-import { MapChunk } from "@/stage/map/chunk"
+import { type StagePopupOptions } from "../object"
+import { Unit } from "../unit/unit"
+import type { MapChunk } from "@/stage/map/chunk"
 
-export class Wall extends StageObject {
+export class Wall extends Unit {
   public type = "codingland.buildings.wall"
   public attributes = { party: "player", passable: false }
   public level = 1

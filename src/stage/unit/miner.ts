@@ -1,8 +1,8 @@
 import type { MapChunk } from "../map/chunk"
 import { ResourcePoint } from "./resource"
-import { StageObject, type StagePopupOptions } from "../object"
-import { Map } from "../map/map"
+import { type StagePopupOptions } from "../object"
 import { Inventory, InventorySlot } from "../inventory/inventory"
+import { Unit } from "./unit"
 
 /**
  * Resource Miner
@@ -13,7 +13,7 @@ import { Inventory, InventorySlot } from "../inventory/inventory"
  *
  * Party: Friendly, Controllable
  */
-export class ResourceMiner extends StageObject {
+export class ResourceMiner extends Unit {
   public type = "codingland.buildings.miner"
   public attributes = { party: "player" }
   public level = 1
@@ -93,6 +93,7 @@ export class ResourceMiner extends StageObject {
   }
 
   update() {
+    super.update()
     if (this.countdown > 0) {
       this.countdown--
     } else {

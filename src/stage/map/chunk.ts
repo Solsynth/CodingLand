@@ -1,9 +1,9 @@
 import { StageObject, type StagePopupOptions, Vector } from "../object"
 import { Map } from "./map"
-import { Wall } from "@/stage/unit/wall"
-import { Inventory } from "@/stage/inventory/inventory"
+import { Wall } from "../unit/wall"
+import { Inventory } from "../inventory/inventory"
 import { useSnackbar } from "@/stores/snackbar"
-import { Defender } from "@/stage/unit/defender"
+import { Defender } from "../unit/defender"
 
 export class MapChunk extends StageObject {
   public type = "codingland.maps.chunk"
@@ -37,7 +37,7 @@ export class MapChunk extends StageObject {
           }
         },
         "build.defender": () => {
-          if (new Inventory().delItem("codingland.wood", 2)) {
+          if (new Inventory().delItem("codingland.wood", 160)) {
             this.setChild(0, new Defender(this.element as HTMLElement))
             console.debug(`[Actions] Successfully build a defender at ${this.position.toString()}!`)
           } else {

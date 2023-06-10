@@ -1,6 +1,7 @@
-import { Direction, StageObject } from "../object"
+import { Direction, type StagePopupOptions } from "../object"
+import type { MapChunk } from "../map/chunk"
 import { Map } from "../map/map"
-import type { MapChunk } from "@/stage/map/chunk"
+import { Unit } from "./unit"
 
 /**
  * Defender ~~Windows Defender~~
@@ -13,7 +14,7 @@ import type { MapChunk } from "@/stage/map/chunk"
  *
  * Party: Friendly, Controllable
  */
-export class Defender extends StageObject {
+export class Defender extends Unit {
   public type = "codingland.buildings.defender"
   public attributes = { party: "player" }
   public level = 1
@@ -55,25 +56,38 @@ export class Defender extends StageObject {
     }
   }
 
+  renderActions(): StagePopupOptions {
+    const chunk = this.parent as MapChunk
+
+    return {
+      icon: this.texture,
+      title: "Defender",
+      content: () => import("@/components/actions/defender.vue"),
+      subtitle: `Level ${this.level}`,
+      caller: this,
+      attributes: {},
+      callbacks: {
+        "destroy": () => {
+          this.dispose()
+          console.debug(`[Actions] Successfully destroy a defender at ${chunk.position.toString()}!`)
+        }
+      }
+    }
+  }
+
   attack() {
     const chunk = this.parent as MapChunk
     const map = this.parent?.parent as Map
     for (const direction of this.range) {
       const targets = map.getEntities(chunk.position.add(direction)).filter(o => o.attributes.party === "enemy")
       for (const target of targets) {
-        target.health -= this.damage
-        if (target.element) {
-          if (target.element.hasAttribute("under-attack-mask")) {
-            clearTimeout(parseInt(target.element.getAttribute("under-attack-mask") as string))
-          }
-          const cleaner = setTimeout(() => target.element?.removeAttribute("under-attack-mask"), 250)
-          target.element.setAttribute("under-attack-mask", cleaner.toString())
-        }
+        target.takeDamage(this.damage)
       }
     }
   }
 
   update() {
+    super.update()
     if (this.countdown > 0) {
       this.countdown--
     } else {
