@@ -2,6 +2,7 @@ import { EnemyDirectAttacker } from "../entity/direct"
 import type { MapChunk } from "../map/chunk"
 import { Map } from "../map/map"
 import { Unit } from "./unit"
+import type { Entity } from "@/stage/entity/entity"
 
 export class Base extends Unit {
   public type = "codingland.buildings.base"
@@ -40,11 +41,15 @@ export class Base extends Unit {
     const enemies = (this.parent?.parent as Map).getEntities((this.parent as MapChunk).position)
     for (const enemy of enemies) {
       // Enemy enter the base
-      if (enemy instanceof EnemyDirectAttacker) {
+      if (enemy.attributes.party === "enemy") {
         enemy.dispose()
-        this.health -= enemy.damage
+        this.health -= (enemy as EnemyDirectAttacker).damage
         this.emitEvent("codingland.damage.base", this.health, enemy.id)
       }
+    }
+
+    if(this.health <= 0) {
+      this.emitEvent("codingland.lifecycle.dead")
     }
   }
 

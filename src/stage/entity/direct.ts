@@ -69,6 +69,11 @@ export class EnemyDirectAttacker extends Entity {
     return next.success
   }
 
+  dispose() {
+    this.emitEvent("codingland.scoreboard.add", this.maxHealth)
+    super.dispose()
+  }
+
   update() {
     super.update()
     if (this.moveCountdown > 0) {

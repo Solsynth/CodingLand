@@ -4,6 +4,21 @@
       <div id="sgt-map-wrapper" class="fit-width fit-height"></div>
     </div>
 
+    <v-dialog v-model="over" width="auto" :scrim="false" persistent absolute class="over-popup">
+      <v-card class="elevation-2 sgt-widget" title="Game Over">
+        <v-card-text>
+          <div>The base was destroy by enemies. Mission failed.</div>
+          <div>But I believe you did your best. Your final score is...</div>
+        </v-card-text>
+        <v-card-text class="pt-0">
+          <div style="font-size: 20px"><b>{{ score }}</b></div>
+        </v-card-text>
+        <v-card-text class="pt-0">
+          <div>But how ever. Thanks for you join our Closed Preview!</div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <div class="mission sgt-widget">
       <v-row dense style="width: 340px">
         <v-col :cols="12">
@@ -15,6 +30,19 @@
                   <li>Protect the base and try you best!</li>
                 </ul>
               </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+
+    <div class="scoreboard sgt-widget">
+      <v-row dense style="width: 280px">
+        <v-col :cols="12">
+          <v-card>
+            <v-card-text>
+              <div><b>Score</b></div>
+              <div style="font-size: 10px">{{ score }}</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -92,6 +120,9 @@ import type { StagePopupOptions } from "@/stage/object"
 import { useRouter } from "vue-router"
 import "@/assets/style/stage.css"
 
+const score = ref(0)
+const over = ref(false)
+
 const recent = ref<{ [id: string]: { negative: boolean; value: string } }>({})
 const inventory = ref<any>([])
 
@@ -130,6 +161,15 @@ onMounted(() => {
       actions.opts = opts
       actions.display = true
     })
+
+    $stage.eventbus.addListener("codingland.scoreboard.add", (n: number) => {
+      score.value += n
+    })
+
+    $stage.eventbus.addListener("codingland.lifecycle.dead", () => {
+      $stage.instance?.pause()
+      over.value = true
+    })
   } else {
     console.error("Launcher isn't finish their work. Game play disabled.")
     console.error("Now auto redirecting to launcher...")
@@ -163,6 +203,15 @@ onUnmounted(() => {
   text-transform: unset;
 }
 
+.scoreboard {
+  min-width: 280px;
+  position: absolute;
+  top: calc(12px + 64px);
+  right: calc(50% - 140px);
+  left: calc(50% - 140px);
+  text-align: center;
+}
+
 .mission {
   min-width: 280px;
   position: absolute;
@@ -175,5 +224,19 @@ onUnmounted(() => {
   position: absolute;
   bottom: 12px;
   left: 12px;
+}
+
+.over-popup .v-overlay__content {
+  bottom: 0;
+  left: calc(50% - 170px);
+  right: calc(50% - 170px);
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+.over-popup .v-overlay__content .v-card {
+  width: 340px;
+  border-radius: 4px 4px 0 0;
 }
 </style>

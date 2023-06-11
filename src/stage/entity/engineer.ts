@@ -86,6 +86,11 @@ export class EnemyEngineer extends Entity {
     }
   }
 
+  dispose() {
+    this.emitEvent("codingland.scoreboard.add", this.maxHealth)
+    super.dispose()
+  }
+
   update() {
     super.update()
     if (this.moveCountdown > 0) {
