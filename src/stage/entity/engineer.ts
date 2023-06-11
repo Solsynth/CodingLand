@@ -21,7 +21,7 @@ export class EnemyEngineer extends Entity {
   public maxHealth = 20.0
 
   private ready = false
-  private attacked = false
+  private attacked: number | null = null
 
   public range = [Direction.Up, Direction.Left, Direction.Center, Direction.Right, Direction.Down]
 
@@ -87,6 +87,7 @@ export class EnemyEngineer extends Entity {
   }
 
   dispose() {
+    clearTimeout(this.attacked ?? -1)
     this.emitEvent("codingland.scoreboard.add", this.maxHealth)
     super.dispose()
   }
@@ -112,11 +113,10 @@ export class EnemyEngineer extends Entity {
         if (map.getChunk(pos)?.children.filter(o => {
           return o.attributes.party === "player" && !o.attributes.invincible
         }).length > 0) {
-          this.attacked = true
           if (this.element) {
             // Play animation
             this.element.classList.add("sgt-engineer-explosion")
-            setTimeout(() => {
+            this.attacked = setTimeout(() => {
               // After animation do damage
               this.attack()
               this.dispose()

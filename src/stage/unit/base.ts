@@ -2,7 +2,9 @@ import { EnemyDirectAttacker } from "../entity/direct"
 import type { MapChunk } from "../map/chunk"
 import { Map } from "../map/map"
 import { Unit } from "./unit"
-import type { Entity } from "@/stage/entity/entity"
+import type { Vector } from "@/stage/object"
+
+export let basePosition: Vector
 
 export class Base extends Unit {
   public type = "codingland.buildings.base"
@@ -34,6 +36,10 @@ export class Base extends Unit {
     element.className = "sgt-base-healthbar"
     element.innerText = `${this.health.toPrecision(3)}%`
     return element
+  }
+
+  mount() {
+    basePosition = (this.parent as MapChunk).position
   }
 
   update() {

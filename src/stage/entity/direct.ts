@@ -1,9 +1,7 @@
 import { Entity, type LookupResult } from "./entity"
-import type { Vector } from "../object"
 import { Map } from "../map/map"
-import { Base } from "../unit/base"
+import { basePosition } from "../unit/base"
 
-let lookupTarget: Vector | null = null
 let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
 /**
@@ -40,13 +38,11 @@ export class EnemyDirectAttacker extends Entity {
     this.addEventListener("codingland.maps.layouts.update", () => {
       if (Object.entries(lookupCache).length > 0) {
         lookupCache = {}
-        lookupTarget = null
       }
     })
   }
 
   async locate(): Promise<boolean> {
-    const map = this.parent as Map
     const pos = this.position.floor()
     if (pos.x && lookupCache[pos.x] == null) {
       lookupCache[pos.x] = {}
@@ -55,15 +51,9 @@ export class EnemyDirectAttacker extends Entity {
       return true
     }
 
-    if (!lookupTarget) {
-      lookupTarget = map.lookupChunk((chunk) => {
-        return chunk.children[0] instanceof Base
-      })[0].position
-    }
-
     const next = await this.lookupPath((chunk) => {
-      return chunk == null || chunk.children[0]?.attributes?.passable === false
-    }, lookupTarget)
+      return chunk == null || chunk?.children[0]?.attributes?.passable === false
+    }, basePosition)
     if (pos.x && pos.y) lookupCache[pos.x][pos.y] = next
     this.direction = next.nextDirection
     return next.success
