@@ -18,8 +18,12 @@ export class ResourceMiner extends Unit {
   public attributes = { party: "player" }
   public level = 1
 
+  public health: number
+  public maxHealth = 20
+
   constructor(chunk: HTMLElement) {
     super()
+    this.health = this.maxHealth
     this.visible = true
     this.mountElement(chunk)
   }

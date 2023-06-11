@@ -19,6 +19,9 @@ export class Defender extends Unit {
   public attributes = { party: "player" }
   public level = 1
 
+  public health: number
+  public maxHealth = 20
+
   public range = [
     Direction.UpRight, Direction.Up, Direction.UpLeft,
     Direction.Left, Direction.Center, Direction.Right,
@@ -27,6 +30,7 @@ export class Defender extends Unit {
 
   constructor(chunk: HTMLElement) {
     super()
+    this.health = this.maxHealth
     this.visible = true
     this.mountElement(chunk)
   }

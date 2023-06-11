@@ -1,5 +1,6 @@
 import { Direction, StageObject, StageQueue, Vector } from "../object"
 import { Map } from "../map/map"
+import type { MapChunk } from "@/stage/map/chunk"
 
 export type LookupResult = { next: Vector; nextDirection: Vector; history: LookupTask[]; success: boolean }
 
@@ -36,7 +37,7 @@ export class Entity extends StageObject {
     this.mountElement(map)
   }
 
-  async lookupPath(...to: Vector[]): Promise<LookupResult> {
+  async lookupPath(validator: (chunk: MapChunk) => boolean, ...to: Vector[]): Promise<LookupResult> {
     const from = this.position.clone()
     const map = this.parent as Map
 
@@ -86,7 +87,7 @@ export class Entity extends StageObject {
       for (const choice of choices) {
         const pos = pin.position.add(choice).floor()
         const chunk = map.getChunk(pos)
-        if (chunk == null || chunk.children[0]?.attributes?.passable === false) {
+        if (validator(chunk)) {
           continue
         }
 

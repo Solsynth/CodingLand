@@ -18,7 +18,7 @@ export class EnemyDirectAttacker extends Entity {
   public attributes = { party: "enemy" }
 
   public damage = 20.0
-  public maxHealth = 10.0
+  public maxHealth = 40.0
 
   private ready = false
 
@@ -61,7 +61,9 @@ export class EnemyDirectAttacker extends Entity {
       })[0].position
     }
 
-    const next = await this.lookupPath(lookupTarget)
+    const next = await this.lookupPath((chunk) => {
+      return chunk == null || chunk.children[0]?.attributes?.passable === false
+    }, lookupTarget)
     if (pos.x && pos.y) lookupCache[pos.x][pos.y] = next
     this.direction = next.nextDirection
     return next.success

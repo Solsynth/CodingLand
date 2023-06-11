@@ -2,6 +2,7 @@ import { Entity, type LookupResult } from "./entity"
 import { Map } from "../map/map"
 import { Direction } from "../object"
 import type { Unit } from "../unit/unit"
+import { Base } from "@/stage/unit/base"
 
 let lookupCache: { [x: number]: { [y: number]: LookupResult } } = {}
 
@@ -17,16 +18,12 @@ export class EnemyEngineer extends Entity {
   public attributes = { party: "enemy" }
 
   public damage = 20.0
-  public maxHealth = 10.0
+  public maxHealth = 20.0
 
   private ready = false
   private attacked = false
 
-  public range = [
-    Direction.UpRight, Direction.Up, Direction.UpLeft,
-    Direction.Left, Direction.Center, Direction.Right,
-    Direction.DownLeft, Direction.Down, Direction.DownRight
-  ]
+  public range = [Direction.Up, Direction.Left, Direction.Center, Direction.Right, Direction.Down]
 
   constructor(map: HTMLElement) {
     super(map)
@@ -60,13 +57,17 @@ export class EnemyEngineer extends Entity {
       return true
     }
 
+    // Lookup all player building
     const target = map.lookupChunk((chunk) => {
-      return chunk.children.filter(o => {
+      return chunk.children[0] instanceof Base || chunk.children.filter(o => {
         return o.attributes.party === "player" && !o.attributes.invincible
       }).length > 0
-    })[0].position
+    }).map(o => o.position)
 
-    const next = await this.lookupPath(target)
+    // Lookup path to nearest player building
+    const next = await this.lookupPath((chunk) => {
+      return chunk == null
+    }, ...target)
     if (pos.x && pos.y) lookupCache[pos.x][pos.y] = next
     this.direction = next.nextDirection
     return next.success
@@ -99,7 +100,7 @@ export class EnemyEngineer extends Entity {
       this.moveCountdown = this.maxMoveCountdown
     }
 
-    if(!this.attacked) {
+    if (!this.attacked) {
       const map = this.parent as Map
       for (const direction of this.range) {
         const pos = this.position.floor().add(direction)
@@ -108,11 +109,13 @@ export class EnemyEngineer extends Entity {
         }).length > 0) {
           this.attacked = true
           if (this.element) {
+            // Play animation
             this.element.classList.add("sgt-engineer-explosion")
             setTimeout(() => {
+              // After animation do damage
               this.attack()
               this.dispose()
-            }, 850)
+            }, 650)
           }
           break
         }

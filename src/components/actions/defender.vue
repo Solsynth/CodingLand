@@ -2,6 +2,8 @@
   <div>
     <v-list density="compact" class="sgt-inspector" lines="two">
       <v-list-subheader>STATUS</v-list-subheader>
+      <v-list-item prepend-icon="mdi-heart" title="Health"
+                   :subtitle="`${(props.caller as any).health}/${(props.caller as any).maxHealth}`" />
       <v-list-item prepend-icon="mdi-bow-arrow" title="Damage" :subtitle="`${(props.caller as any).damage} Points`" />
     </v-list>
     <v-list density="compact" class="sgt-inspector">

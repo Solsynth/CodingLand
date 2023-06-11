@@ -11,7 +11,7 @@ export interface StagePopupOptions {
 }
 
 export class StageQueue<T> {
-  private elements: T[]
+  public elements: T[]
 
   constructor() {
     this.elements = []
